@@ -12,6 +12,9 @@ public class EnemigoZombi : MonoBehaviour
     public float cooldownAtaque = 2f; // Tiempo en segundos entre cada golpe
     private float tiempoSiguienteAtaque = 0f;
 
+    [Header("Daño al Jugador")]
+    public float dañoAtaque = 15f;
+
     [Header("Salud y Estado")]
     public int vidaMaxima = 100;
     private int vidaActual;
@@ -61,6 +64,13 @@ public class EnemigoZombi : MonoBehaviour
             if (Time.time >= tiempoSiguienteAtaque)
             {
                 anim.SetTrigger("Atacar");
+
+                // ¡NUEVO! Conectamos el golpe con la salud del jugador
+                SupervivenciaJugador jugador = objetivoJugador.GetComponent<SupervivenciaJugador>();
+                if (jugador != null)
+                {
+                    jugador.RecibirDaño(dañoAtaque);
+                }
                 
                 // Reiniciamos el reloj sumándole el cooldown al tiempo actual
                 tiempoSiguienteAtaque = Time.time + cooldownAtaque;
