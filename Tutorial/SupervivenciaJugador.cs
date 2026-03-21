@@ -63,4 +63,18 @@ public class SupervivenciaJugador : MonoBehaviour
         if (barraSalud != null) barraSalud.fillAmount = saludActual / 100f;
         if (barraHambre != null) barraHambre.fillAmount = hambreActual / 100f;
     }
+
+    public void RecibirDaño(float cantidad)
+    {
+        saludActual -= cantidad;
+        saludActual = Mathf.Clamp(saludActual, 0, 100);
+
+        // Activamos el pantallazo rojo
+        if (pantallaRoja != null)
+        {
+            pantallaRoja.color = colorDaño;
+        }
+
+        ActualizarUI();
+    }
 }
