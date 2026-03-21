@@ -21,8 +21,14 @@ public class InteraccionJugador : MonoBehaviour
     public float distanciaInteraccion = 5f;
     public LayerMask capaInteractuable;
 
-    // 4 Slots fijos
-    public enum TipoHerramienta { Comida, Hacha, Pico, ArmaFuego, CuerpoACuerpo }
+    // 4 Slots fijos (¡Añadimos 'Ninguno' para las manos vacías!)
+    public enum TipoHerramienta { Ninguno, Comida, Hacha, Pico, ArmaFuego, CuerpoACuerpo }
+
+    [Header("Desbloqueos (Tutorial)")]
+    public bool tieneHacha = false;
+    public bool tienePico = false;
+    public bool tieneCuchillo = false;
+    public bool tieneArmaFuego = false;
     
     [Header("Cinturón de Herramientas")]
     public TipoHerramienta herramientaActual = TipoHerramienta.ArmaFuego;
@@ -72,7 +78,19 @@ public class InteraccionJugador : MonoBehaviour
     {
         inventario = GetComponentInParent<InventarioJugador>();
         
-        CambiarHerramienta(3); // Inicia con el arma por defecto (Índice 3)
+        // Forzamos a que inicies sin nada equipado
+        herramientaActual = TipoHerramienta.Ninguno;
+
+        // Apagamos visualmente todos los botones del cinturón (slots) al iniciar el juego
+        for (int i = 0; i < slotsCinturon.Length; i++)
+        {
+            if (slotsCinturon[i] != null)
+            {
+                slotsCinturon[i].gameObject.SetActive(false);
+            }
+        }
+
+        CambiarHerramienta(-1); // Un índice negativo asegura que todos los modelos 3D se apaguen al inicio
 
         if (camaraTransform != null)
         {
