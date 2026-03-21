@@ -38,6 +38,14 @@ public class InventarioJugador : MonoBehaviour
         {
             madera += cantidad;
             iconoAAnimar = iconoMadera;
+
+            // ¡NUEVO! Conexión mágica con el tutorial
+            ManejadorTutorial tutorial = FindFirstObjectByType<ManejadorTutorial>();
+            // Si estamos en la misión del árbol (Paso 1) y ya juntamos 20 de madera, avanzamos
+            if (tutorial != null && tutorial.pasoActual == 1 && madera >= 20)
+            {
+                tutorial.AvanzarTutorial();
+            }
         }
         else if (tipo == "Piedra")
         {
@@ -64,6 +72,7 @@ public class InventarioJugador : MonoBehaviour
             StartCoroutine(EfectoPunch(iconoAAnimar));
         }
     }
+    
     IEnumerator EfectoPunch(RectTransform target)
     {
         Vector3 escalaOriginal = Vector3.one;
