@@ -234,13 +234,12 @@ public class InteraccionJugador : MonoBehaviour
     void Update()
     {
         // 1. Rayo invisible para detectar qué estamos mirando
-        RaycastHit hit;
-        // ¡CAMBIO AQUÍ! Disparamos desde la cámara
-        bool estaApuntando = Physics.Raycast(camaraTransform.position, camaraTransform.forward, out hit, distanciaInteraccion, capaInteractuable);
+        RaycastHit hitUpdate;
+        bool estaApuntando = Physics.Raycast(camaraTransform.position, camaraTransform.forward, out hitUpdate, distanciaInteraccion, capaInteractuable);
 
         if (iconoBotonInteractuar != null)
         {
-            bool viendoInteractuable = estaApuntando && hit.collider.CompareTag("Interactuable");
+            bool viendoInteractuable = estaApuntando && hitUpdate.collider.CompareTag("Interactuable");
             iconoBotonInteractuar.gameObject.SetActive(viendoInteractuable);
         }
 
@@ -292,13 +291,12 @@ public class InteraccionJugador : MonoBehaviour
                     velocidadActual = 10f / armaMelee.cadenciaAtaque; 
                 }
             }
-            // ¡NUEVO! Posicionamiento de la Comida
+            // Posicionamiento de la Comida
             else if (herramientaActual == TipoHerramienta.Comida)
             {
                 ControladorConsumibles comidaActiva = modeloActivo.GetComponent<ControladorConsumibles>();
                 if (comidaActiva != null)
                 {
-                    // Si el relojito está girando, significa que la está consumiendo
                     bool enConsumo = Time.time < tiempoSiguienteAccion;
                     destinoPos = enConsumo ? comidaActiva.posAccion : comidaActiva.posEspera;
                     destinoRot = enConsumo ? comidaActiva.rotAccion : comidaActiva.rotEspera;
@@ -345,13 +343,33 @@ public class InteraccionJugador : MonoBehaviour
                     }
                 }
             }
-            // ¡NUEVO! Comer automáticamente si mantienes el botón
+            // Comer automáticamente si mantienes el botón
             else if (herramientaActual == TipoHerramienta.Comida && modeloActivo != null)
             {
                 ControladorConsumibles comidaActiva = modeloActivo.GetComponent<ControladorConsumibles>();
                 if (comidaActiva != null)
                 {
                     comidaActiva.IntentarConsumir();
+                }
+            }
+            // ¡NUEVO! Talar y picar en automático
+            else if ((herramientaActual == TipoHerramienta.Hacha || herramientaActual == TipoHerramienta.Pico) && Time.time >= tiempoSiguienteAccion)
+            {
+                RaycastHit hit;
+                if (Physics.Raycast(camaraTransform.position, camaraTransform.forward, out hit, distanciaInteraccion, capaInteractuable))
+                {
+                    if (herramientaActual == TipoHerramienta.Hacha && hit.collider.CompareTag("Recurso_Madera"))
+                    {
+                        inventario.AgregarRecurso("Madera", 1);
+                        if (audioSourceJugador != null && sonidoTalar != null) audioSourceJugador.PlayOneShot(sonidoTalar);
+                        AplicarCooldown(cooldownRecursos);
+                    }
+                    else if (herramientaActual == TipoHerramienta.Pico && hit.collider.CompareTag("Recurso_Piedra"))
+                    {
+                        inventario.AgregarRecurso("Piedra", 1);
+                        if (audioSourceJugador != null && sonidoPicar != null) audioSourceJugador.PlayOneShot(sonidoPicar);
+                        AplicarCooldown(cooldownRecursos);
+                    }
                 }
             }
         }
