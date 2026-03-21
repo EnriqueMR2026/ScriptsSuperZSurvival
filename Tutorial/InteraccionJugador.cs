@@ -104,8 +104,18 @@ public class InteraccionJugador : MonoBehaviour
 
     public void CambiarHerramienta(int indiceSlot)
     {
+        // 0. ¡CANDADOS DE DESBLOQUEO! Verificamos si tenemos la herramienta antes de intentar sacarla
+        if (indiceSlot == 1 && !tieneHacha) return;
+        if (indiceSlot == 2 && !tienePico) return;
+        if (indiceSlot == 3)
+        {
+            if (armaEnSlotPrincipal == TipoHerramienta.ArmaFuego && !tieneArmaFuego) return;
+            if (armaEnSlotPrincipal == TipoHerramienta.CuerpoACuerpo && !tieneCuchillo) return;
+        }
+
         // 1. Asignamos la herramienta dependiendo de qué botón del cinturón tocaste
-        if (indiceSlot == 0) herramientaActual = TipoHerramienta.Comida;
+        if (indiceSlot == -1) herramientaActual = TipoHerramienta.Ninguno; // Para apagar todo al inicio
+        else if (indiceSlot == 0) herramientaActual = TipoHerramienta.Comida;
         else if (indiceSlot == 1) herramientaActual = TipoHerramienta.Hacha;
         else if (indiceSlot == 2) herramientaActual = TipoHerramienta.Pico;
         else if (indiceSlot == 3) herramientaActual = armaEnSlotPrincipal;
@@ -119,6 +129,7 @@ public class InteraccionJugador : MonoBehaviour
             else if (herramientaActual == TipoHerramienta.Pico) iconoBotonAccion.sprite = spritePico;
             else if (herramientaActual == TipoHerramienta.ArmaFuego) iconoBotonAccion.sprite = spriteBala;
             else if (herramientaActual == TipoHerramienta.CuerpoACuerpo) iconoBotonAccion.sprite = spriteMano; 
+            else if (herramientaActual == TipoHerramienta.Ninguno) iconoBotonAccion.sprite = spriteMano;
         }
 
         // 3. Resaltamos visualmente el slot
@@ -126,7 +137,8 @@ public class InteraccionJugador : MonoBehaviour
         {
             if (slotsCinturon[i] == null) continue; 
 
-            if (i == indiceSlot)
+            // Solo resaltamos si tocamos un slot válido (no -1)
+            if (i == indiceSlot && indiceSlot != -1)
             {
                 slotsCinturon[i].color = colorSeleccionado;
                 slotsCinturon[i].rectTransform.localScale = Vector3.one * escalaSeleccionado;
@@ -151,6 +163,30 @@ public class InteraccionJugador : MonoBehaviour
         else if (herramientaActual == TipoHerramienta.Pico) modeloActivo = objetoPico;
         else if (herramientaActual == TipoHerramienta.ArmaFuego) modeloActivo = objetoArma;
         else if (herramientaActual == TipoHerramienta.CuerpoACuerpo) modeloActivo = objetoCuerpoACuerpo;
+        else if (herramientaActual == TipoHerramienta.Ninguno) modeloActivo = null;
+    }
+
+    // ¡NUEVA FUNCIÓN! Para que la tienda o los objetos del suelo la llamen
+    public void DesbloquearHerramienta(TipoHerramienta herramientaNueva)
+    {
+        if (herramientaNueva == TipoHerramienta.Hacha)
+        {
+            tieneHacha = true;
+            if (slotsCinturon.Length > 1 && slotsCinturon[1] != null) slotsCinturon[1].gameObject.SetActive(true);
+            CambiarHerramienta(1); // La equipamos de inmediato
+        }
+        else if (herramientaNueva == TipoHerramienta.CuerpoACuerpo)
+        {
+            tieneCuchillo = true;
+            armaEnSlotPrincipal = TipoHerramienta.CuerpoACuerpo; // Ponemos el cuchillo como arma principal
+            if (slotsCinturon.Length > 3 && slotsCinturon[3] != null) slotsCinturon[3].gameObject.SetActive(true);
+            CambiarHerramienta(3);
+        }
+        else if (herramientaNueva == TipoHerramienta.Comida)
+        {
+            if (slotsCinturon.Length > 0 && slotsCinturon[0] != null) slotsCinturon[0].gameObject.SetActive(true);
+            CambiarHerramienta(0);
+        }
     }
 
     public void TocarBotonCinturon(int indiceBoton)
