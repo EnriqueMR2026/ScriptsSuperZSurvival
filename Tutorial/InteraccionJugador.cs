@@ -396,7 +396,7 @@ public class InteraccionJugador : MonoBehaviour
         {
             if (hit.collider.CompareTag("Interactuable"))
             {
-                // Intentamos sacar el script de ObjetoRecogible de la mesa (como el hacha)
+                // Intentamos sacar el script de ObjetoRecogible de la mesa
                 ObjetoRecogible objeto = hit.collider.GetComponent<ObjetoRecogible>();
                 if (objeto != null)
                 {
@@ -404,11 +404,18 @@ public class InteraccionJugador : MonoBehaviour
                     objeto.Interactuar(gameObject);
                 }
 
-                // ¡NUEVO! Intentamos abrir la tienda interactiva
+                // Intentamos abrir la tienda interactiva
                 TiendaInteractiva tienda = hit.collider.GetComponent<TiendaInteractiva>();
                 if (tienda != null)
                 {
                     tienda.AbrirTienda();
+                }
+
+                // ¡NUEVO! Intentamos encender la fogata para la invasión
+                FogataTutorial fogata = hit.collider.GetComponent<FogataTutorial>();
+                if (fogata != null)
+                {
+                    fogata.Encender();
                 }
             }
         }
