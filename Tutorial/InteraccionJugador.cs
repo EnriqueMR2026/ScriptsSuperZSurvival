@@ -370,6 +370,26 @@ public class InteraccionJugador : MonoBehaviour
         manteniendoBotonAccion = false;
     }
 
+    // ¡NUEVA FUNCIÓN! Para el botón táctil de la manita
+    public void PresionarBotonInteractuar()
+    {
+        RaycastHit hit;
+        // Lanzamos el rayo para ver qué estamos mirando exactamente al momento de picar el botón
+        if (Physics.Raycast(transform.position, transform.forward, out hit, distanciaInteraccion, capaInteractuable))
+        {
+            if (hit.collider.CompareTag("Interactuable"))
+            {
+                // Intentamos sacar el script de ObjetoRecogible de la mesa
+                ObjetoRecogible objeto = hit.collider.GetComponent<ObjetoRecogible>();
+                if (objeto != null)
+                {
+                    // Le mandamos este jugador para que sepa a quién darle el arma
+                    objeto.Interactuar(gameObject);
+                }
+            }
+        }
+    }
+
     // Función auxiliar que ya tenías
     public void AplicarCooldown(float tiempo)
     {
