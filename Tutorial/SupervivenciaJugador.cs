@@ -15,6 +15,11 @@ public class SupervivenciaJugador : MonoBehaviour
     public Image barraSalud;
     public Image barraHambre;
 
+    [Header("Efectos de Daño")]
+    public Image pantallaRoja; // Crea una imagen roja en tu Canvas, ponle transparencia 0, y arrástrala aquí
+    public float velocidadDesvanecimientoDaño = 5f;
+    public Color colorDaño = new Color(1f, 0f, 0f, 0.5f); // Qué tan intenso será el parpadeo rojo
+
     void Start()
     {
         saludActual = 100f;
@@ -39,6 +44,12 @@ public class SupervivenciaJugador : MonoBehaviour
         hambreActual = Mathf.Clamp(hambreActual, 0, 100);
 
         ActualizarUI();
+
+        // Efecto visual de desvanecer la pantalla roja de daño poco a poco
+        if (pantallaRoja != null && pantallaRoja.color.a > 0)
+        {
+            pantallaRoja.color = Color.Lerp(pantallaRoja.color, Color.clear, velocidadDesvanecimientoDaño * Time.deltaTime);
+        }
 
         if (saludActual <= 0)
         {
