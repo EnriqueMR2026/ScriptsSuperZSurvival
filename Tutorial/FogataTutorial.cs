@@ -18,7 +18,9 @@ public class FogataTutorial : MonoBehaviour
         
         // Nos aseguramos de que el fuego y los zombis estén apagados al iniciar el juego
         if (fuegoParticulas != null) fuegoParticulas.SetActive(false);
-        if (luzFogata != null) luzFogata.SetActive(false);
+        
+        // ¡CORRECCIÓN! Usamos .enabled en lugar de .SetActive para los componentes de Luz
+        if (luzFogata != null) luzFogata.enabled = false; 
 
         foreach(GameObject z in zombis)
         {
@@ -33,7 +35,9 @@ public class FogataTutorial : MonoBehaviour
         {
             // Prendemos el fuego
             if (fuegoParticulas != null) fuegoParticulas.SetActive(true);
-            if (luzFogata != null) luzFogata.SetActive(true);
+            
+            // ¡CORRECCIÓN! Usamos .enabled aquí también
+            if (luzFogata != null) luzFogata.enabled = true; 
 
             // ¡MAGIA DE TERROR! Cambiamos la niebla a un rojo oscuro y denso
             RenderSettings.fog = true;
