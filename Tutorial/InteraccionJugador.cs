@@ -39,6 +39,9 @@ public class InteraccionJugador : MonoBehaviour
     public Color colorNormal = Color.white;
     public float escalaSeleccionado = 1.2f;
 
+    [Header("Botones Extras UI")]
+    public GameObject botonRecargarObj;
+
     [Header("Configuración de Cooldowns")]
     public float cooldownRecursos = 0.9f; 
     public float cooldownArma = 0.3f; 
@@ -73,6 +76,11 @@ public class InteraccionJugador : MonoBehaviour
     public Vector3 posAccionPico; public Vector3 rotAccionPico;
     
     private GameObject modeloActivo;
+
+    [Header("Sonidos de Recolección")]
+    public AudioSource audioSourceJugador; // Arrastra a tu jugador aquí en el inspector para que emita el sonido
+    public AudioClip sonidoTalar;
+    public AudioClip sonidoPicar;
 
     void Start()
     {
@@ -121,15 +129,24 @@ public class InteraccionJugador : MonoBehaviour
         else if (indiceSlot == 3) herramientaActual = armaEnSlotPrincipal;
         else if (indiceSlot == 4) return; // El slot 4 (arriba) no se puede "equipar" directo, solo se intercambia
 
-        // 2. Cambiamos el icono del botón de acción (Blindado)
+        // 2. Cambiamos el icono del botón de acción (Blindado) y mostramos/ocultamos botones
         if (iconoBotonAccion != null)
         {
+            // ¡NUEVO! Apagamos el botón de acción si tenemos las manos vacías
+            iconoBotonAccion.gameObject.SetActive(herramientaActual != TipoHerramienta.Ninguno);
+
             if (herramientaActual == TipoHerramienta.Comida) iconoBotonAccion.sprite = spriteManzana;
             else if (herramientaActual == TipoHerramienta.Hacha) iconoBotonAccion.sprite = spriteHacha;
             else if (herramientaActual == TipoHerramienta.Pico) iconoBotonAccion.sprite = spritePico;
             else if (herramientaActual == TipoHerramienta.ArmaFuego) iconoBotonAccion.sprite = spriteBala;
             else if (herramientaActual == TipoHerramienta.CuerpoACuerpo) iconoBotonAccion.sprite = spriteMano; 
             else if (herramientaActual == TipoHerramienta.Ninguno) iconoBotonAccion.sprite = spriteMano;
+        }
+
+        // ¡NUEVO! Apagamos el botón de recargar si no tenemos un arma de fuego
+        if (botonRecargarObj != null)
+        {
+            botonRecargarObj.SetActive(herramientaActual == TipoHerramienta.ArmaFuego);
         }
 
         // 3. Resaltamos visualmente el slot
@@ -350,17 +367,18 @@ public class InteraccionJugador : MonoBehaviour
         if (herramientaActual != TipoHerramienta.ArmaFuego && Time.time >= tiempoSiguienteAccion)
         {
             RaycastHit hit;
-            //  Disparamos desde la cámara
             if (Physics.Raycast(camaraTransform.position, camaraTransform.forward, out hit, distanciaInteraccion, capaInteractuable))
             {
                 if (herramientaActual == TipoHerramienta.Hacha && hit.collider.CompareTag("Recurso_Madera"))
                 {
                     inventario.AgregarRecurso("Madera", 1);
+                    if (audioSourceJugador != null && sonidoTalar != null) audioSourceJugador.PlayOneShot(sonidoTalar);
                     AplicarCooldown(cooldownRecursos);
                 }
                 else if (herramientaActual == TipoHerramienta.Pico && hit.collider.CompareTag("Recurso_Piedra"))
                 {
                     inventario.AgregarRecurso("Piedra", 1);
+                    if (audioSourceJugador != null && sonidoPicar != null) audioSourceJugador.PlayOneShot(sonidoPicar);
                     AplicarCooldown(cooldownRecursos);
                 }
             }
