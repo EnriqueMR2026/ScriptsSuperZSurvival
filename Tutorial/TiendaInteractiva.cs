@@ -20,6 +20,10 @@ public class TiendaInteractiva : MonoBehaviour
             // Oscurecemos la luz y la volvemos de un tono azul medianoche usando tiempo real (unscaledDeltaTime)
             luzDireccional.intensity = Mathf.Lerp(luzDireccional.intensity, 0.05f, Time.unscaledDeltaTime * 0.5f);
             luzDireccional.color = Color.Lerp(luzDireccional.color, new Color(0.1f, 0.15f, 0.3f), Time.unscaledDeltaTime * 0.5f);
+            
+            // ¡NUEVO! Rotamos el sol para que se haga de noche visualmente (X: -90, Y: 0, Z: 0)
+            Quaternion rotacionNoche = Quaternion.Euler(-90f, 0f, 0f);
+            luzDireccional.transform.rotation = Quaternion.Slerp(luzDireccional.transform.rotation, rotacionNoche, Time.unscaledDeltaTime * 0.5f);
         }
     }
 
