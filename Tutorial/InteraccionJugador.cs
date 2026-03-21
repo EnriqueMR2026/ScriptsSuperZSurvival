@@ -362,27 +362,6 @@ public class InteraccionJugador : MonoBehaviour
     public void PresionarBotonAccion()
     {
         manteniendoBotonAccion = true;
-
-        // Lógica de talar y picar (Solo se ejecuta una vez al tocar)
-        if (herramientaActual != TipoHerramienta.ArmaFuego && Time.time >= tiempoSiguienteAccion)
-        {
-            RaycastHit hit;
-            if (Physics.Raycast(camaraTransform.position, camaraTransform.forward, out hit, distanciaInteraccion, capaInteractuable))
-            {
-                if (herramientaActual == TipoHerramienta.Hacha && hit.collider.CompareTag("Recurso_Madera"))
-                {
-                    inventario.AgregarRecurso("Madera", 1);
-                    if (audioSourceJugador != null && sonidoTalar != null) audioSourceJugador.PlayOneShot(sonidoTalar);
-                    AplicarCooldown(cooldownRecursos);
-                }
-                else if (herramientaActual == TipoHerramienta.Pico && hit.collider.CompareTag("Recurso_Piedra"))
-                {
-                    inventario.AgregarRecurso("Piedra", 1);
-                    if (audioSourceJugador != null && sonidoPicar != null) audioSourceJugador.PlayOneShot(sonidoPicar);
-                    AplicarCooldown(cooldownRecursos);
-                }
-            }
-        }
     }
 
     public void SoltarBotonAccion()
