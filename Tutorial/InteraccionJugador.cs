@@ -218,7 +218,8 @@ public class InteraccionJugador : MonoBehaviour
     {
         // 1. Rayo invisible para detectar qué estamos mirando
         RaycastHit hit;
-        bool estaApuntando = Physics.Raycast(transform.position, transform.forward, out hit, distanciaInteraccion, capaInteractuable);
+        // ¡CAMBIO AQUÍ! Disparamos desde la cámara
+        bool estaApuntando = Physics.Raycast(camaraTransform.position, camaraTransform.forward, out hit, distanciaInteraccion, capaInteractuable);
 
         if (iconoBotonInteractuar != null)
         {
@@ -349,7 +350,8 @@ public class InteraccionJugador : MonoBehaviour
         if (herramientaActual != TipoHerramienta.ArmaFuego && Time.time >= tiempoSiguienteAccion)
         {
             RaycastHit hit;
-            if (Physics.Raycast(transform.position, transform.forward, out hit, distanciaInteraccion, capaInteractuable))
+            //  Disparamos desde la cámara
+            if (Physics.Raycast(camaraTransform.position, camaraTransform.forward, out hit, distanciaInteraccion, capaInteractuable))
             {
                 if (herramientaActual == TipoHerramienta.Hacha && hit.collider.CompareTag("Recurso_Madera"))
                 {
@@ -374,8 +376,8 @@ public class InteraccionJugador : MonoBehaviour
     public void PresionarBotonInteractuar()
     {
         RaycastHit hit;
-        // Lanzamos el rayo para ver qué estamos mirando exactamente al momento de picar el botón
-        if (Physics.Raycast(transform.position, transform.forward, out hit, distanciaInteraccion, capaInteractuable))
+        // ¡CAMBIO AQUÍ! Disparamos desde la cámara
+        if (Physics.Raycast(camaraTransform.position, camaraTransform.forward, out hit, distanciaInteraccion, capaInteractuable))
         {
             if (hit.collider.CompareTag("Interactuable"))
             {
