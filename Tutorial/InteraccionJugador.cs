@@ -209,20 +209,28 @@ public class InteraccionJugador : MonoBehaviour
                     velocidadActual = manteniendoBotonAccion ? (velocidadSuavizadoArma * 3f) : velocidadSuavizadoArma;
                 }
             }
-            /// ¡NUEVO! Conectamos las posiciones de tu cuchillo con animación de tajo
             else if (herramientaActual == TipoHerramienta.CuerpoACuerpo)
             {
                 ControladorCuerpoACuerpo armaMelee = modeloActivo.GetComponent<ControladorCuerpoACuerpo>();
                 if (armaMelee != null)
                 {
-                    // Calculamos si está a la mitad del tajo usando su propio tiempo de ataque
                     bool enGolpe = Time.time < (tiempoSiguienteAccion - (armaMelee.cadenciaAtaque / 2f));
-                    
                     destinoPos = enGolpe ? armaMelee.posAccion : armaMelee.posEspera;
                     destinoRot = enGolpe ? armaMelee.rotAccion : armaMelee.rotEspera;
-                    
-                    // La velocidad se ajusta para que el tajo sea rápido y regrese suavemente
                     velocidadActual = 10f / armaMelee.cadenciaAtaque; 
+                }
+            }
+            // ¡NUEVO! Posicionamiento de la Comida
+            else if (herramientaActual == TipoHerramienta.Comida)
+            {
+                ControladorConsumibles comidaActiva = modeloActivo.GetComponent<ControladorConsumibles>();
+                if (comidaActiva != null)
+                {
+                    // Si el relojito está girando, significa que la está consumiendo
+                    bool enConsumo = Time.time < tiempoSiguienteAccion;
+                    destinoPos = enConsumo ? comidaActiva.posAccion : comidaActiva.posEspera;
+                    destinoRot = enConsumo ? comidaActiva.rotAccion : comidaActiva.rotEspera;
+                    velocidadActual = 10f / comidaActiva.tiempoConsumo;
                 }
             }
 
@@ -252,7 +260,6 @@ public class InteraccionJugador : MonoBehaviour
                 ControladorArmas armaActiva = modeloActivo.GetComponent<ControladorArmas>();
                 if (armaActiva != null) armaActiva.IntentarDisparar(); 
             }
-            // ¡NUEVO! Le damos la orden de dar el tajo al cuchillo y girar el relojito
             else if (herramientaActual == TipoHerramienta.CuerpoACuerpo && modeloActivo != null)
             {
                 ControladorCuerpoACuerpo armaMelee = modeloActivo.GetComponent<ControladorCuerpoACuerpo>();
@@ -264,6 +271,15 @@ public class InteraccionJugador : MonoBehaviour
                     {
                         AplicarCooldown(armaMelee.cadenciaAtaque);
                     }
+                }
+            }
+            // ¡NUEVO! Comer automáticamente si mantienes el botón
+            else if (herramientaActual == TipoHerramienta.Comida && modeloActivo != null)
+            {
+                ControladorConsumibles comidaActiva = modeloActivo.GetComponent<ControladorConsumibles>();
+                if (comidaActiva != null)
+                {
+                    comidaActiva.IntentarConsumir();
                 }
             }
         }
