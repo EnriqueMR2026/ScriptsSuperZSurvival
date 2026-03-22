@@ -43,7 +43,7 @@ public class ManejadorTutorial : MonoBehaviour
                 textoMision = "NUEVO OBJETIVO: Ve al comedor de la taberna y toma el hacha de la mesa.";
                 break;
             case 1:
-                textoMision.text = "NUEVO OBJETIVO: Sal al refugio, busca el Árbol Celestial y recolecta madera.";
+                textoMision = "NUEVO OBJETIVO: Sal al refugio, busca el Árbol Celestial y recolecta madera.";
                 break;
             case 2:
                 textoMision = "NUEVO OBJETIVO: Ve a la tienda, intercambia la madera por oro y compra un cuchillo y 5 manzanas.";
