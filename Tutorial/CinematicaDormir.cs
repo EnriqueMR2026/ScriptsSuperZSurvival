@@ -102,13 +102,18 @@ public class CinematicaDormir : MonoBehaviour
 
         camaraCinematica.gameObject.SetActive(false);
         
-        // ¡NUEVO AJUSTE! Teletransportamos al jugador y forzamos tu rotación a 0, 0, 0
+        // ¡NUEVO TRUCO! Llamamos al script del jugador para alinear cuerpo y cámara
         if (jugadorReal != null) 
         {
             jugadorReal.transform.position = puntoDePie.position;
             
-            // Forzamos la rotación exacta a X: 0, Y: 0, Z: 0
-            jugadorReal.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+            // Sacamos el script de movimiento y le ordenamos las rotaciones
+            MovimientoJugador mov = jugadorReal.GetComponent<MovimientoJugador>();
+            if (mov != null)
+            {
+                // Le pasamos (90 para el cuerpo en Y, 0 para la cámara en X)
+                mov.ForzarRotacion(90f, 0f);
+            }
             
             jugadorReal.SetActive(true);
         }

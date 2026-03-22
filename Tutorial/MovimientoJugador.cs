@@ -44,4 +44,20 @@ public class MovimientoJugador : MonoBehaviour
 
         transform.Rotate(Vector3.up * inputVista.x * sensibilidadVista * Time.deltaTime);
     }
+
+    // ¡NUEVA FUNCIÓN MÁGICA! Para forzar la vista sin que el Update nos pelee
+    public void ForzarRotacion(float rotacionYDelCuerpo, float rotacionXDeLaCamara)
+    {
+        // 1. Giramos el cuerpo entero (Y)
+        transform.rotation = Quaternion.Euler(0f, rotacionYDelCuerpo, 0f);
+
+        // 2. Reseteamos la memoria interna de la cámara para que no dé saltos
+        rotacionX = rotacionXDeLaCamara;
+
+        // 3. Forzamos la cámara a mirar exactamente a donde le decimos (X)
+        if (camaraJugador != null)
+        {
+            camaraJugador.localRotation = Quaternion.Euler(rotacionX, 0f, 0f);
+        }
+    }
 }
