@@ -11,10 +11,13 @@ public class CamaTutorial : MonoBehaviour
         {
             tutorial.AvanzarTutorial();
             
-            // ¡MAGIA! Buscamos el nuevo script y le decimos que inicie la cinemática
-            CinematicaDormir cinematica = FindFirstObjectByType<CinematicaDormir>();
+            // ¡EL TRUCO NUEVO! Buscamos el script INCLUSO si el Canvas está apagado
+            CinematicaDormir cinematica = FindFirstObjectByType<CinematicaDormir>(FindObjectsInactive.Include);
             if (cinematica != null)
             {
+                // Primero prendemos el Canvas para que se vea la magia
+                cinematica.gameObject.SetActive(true);
+                // Luego iniciamos la cinemática
                 cinematica.IniciarDormir();
             }
         }
