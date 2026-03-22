@@ -81,10 +81,6 @@ public class FogataTutorial : MonoBehaviour
             {
                 hordaActiva = false;
 
-                // ¡NUEVO! Apagamos la fogata y su luz porque ya estás a salvo
-                if (fuegoParticulas != null) fuegoParticulas.SetActive(false);
-                if (luzFogata != null) luzFogata.enabled = false;
-                
                 // Quitamos la niebla roja y ponemos una de noche normal
                 RenderSettings.fogColor = new Color(0.1f, 0.1f, 0.15f); 
                 RenderSettings.fogDensity = 0.02f;
