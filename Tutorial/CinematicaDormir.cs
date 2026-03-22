@@ -102,13 +102,13 @@ public class CinematicaDormir : MonoBehaviour
 
         camaraCinematica.gameObject.SetActive(false);
         
-        // ¡NUEVO AJUSTE! Teletransportamos al jugador y forzamos tu rotación exacta
+        // ¡NUEVO AJUSTE! Teletransportamos al jugador y forzamos tu rotación a 0, 0, 0
         if (jugadorReal != null) 
         {
             jugadorReal.transform.position = puntoDePie.position;
             
-            // Forzamos la rotación a X: 0, Y: 90, Z: 0 usando Quaternion.Euler
-            jugadorReal.transform.rotation = Quaternion.Euler(0f, 90f, 0f);
+            // Forzamos la rotación exacta a X: 0, Y: 0, Z: 0
+            jugadorReal.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
             
             jugadorReal.SetActive(true);
         }
