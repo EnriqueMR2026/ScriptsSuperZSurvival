@@ -391,31 +391,37 @@ public class InteraccionJugador : MonoBehaviour
     public void PresionarBotonInteractuar()
     {
         RaycastHit hit;
-        // ¡CAMBIO AQUÍ! Disparamos desde la cámara
+        // Disparamos desde la cámara
         if (Physics.Raycast(camaraTransform.position, camaraTransform.forward, out hit, distanciaInteraccion, capaInteractuable))
         {
             if (hit.collider.CompareTag("Interactuable"))
             {
-                // Intentamos sacar el script de ObjetoRecogible de la mesa
+                // 1. Intentamos sacar el script de ObjetoRecogible (El hacha)
                 ObjetoRecogible objeto = hit.collider.GetComponent<ObjetoRecogible>();
                 if (objeto != null)
                 {
-                    // Le mandamos este jugador para que sepa a quién darle el arma
                     objeto.Interactuar(gameObject);
                 }
 
-                // Intentamos abrir la tienda interactiva
+                // 2. Intentamos abrir la tienda interactiva
                 TiendaInteractiva tienda = hit.collider.GetComponent<TiendaInteractiva>();
                 if (tienda != null)
                 {
                     tienda.AbrirTienda();
                 }
 
-                // ¡NUEVO! Intentamos encender la fogata para la invasión
+                // 3. Intentamos encender la fogata para la invasión
                 FogataTutorial fogata = hit.collider.GetComponent<FogataTutorial>();
                 if (fogata != null)
                 {
                     fogata.Encender();
+                }
+
+                // ¡EL GRAN FINAL! Intentamos irnos a dormir
+                CamaTutorial cama = hit.collider.GetComponent<CamaTutorial>();
+                if (cama != null)
+                {
+                    cama.Dormir();
                 }
             }
         }
