@@ -6,18 +6,17 @@ public class CamaTutorial : MonoBehaviour
     {
         ManejadorTutorial tutorial = FindFirstObjectByType<ManejadorTutorial>();
         
-        // Solo te deja dormir si ya mataste a los zombis
-        if (tutorial != null && tutorial.pasoActual >= 4)
+        // ¡CANDADO ACTIVO! Solo te deja dormir EXACTAMENTE en el paso 4 (Noche del Día 1). 
+        // Si avanzas al paso 5 (Amanecer del Día 2), ya no hará nada.
+        if (tutorial != null && tutorial.pasoActual == 4)
         {
+            // Avanza al paso 5 (Día 2) para bloquear la cama
             tutorial.AvanzarTutorial();
             
-            // ¡EL TRUCO NUEVO! Buscamos el script INCLUSO si el Canvas está apagado
             CinematicaDormir cinematica = FindFirstObjectByType<CinematicaDormir>(FindObjectsInactive.Include);
             if (cinematica != null)
             {
-                // Primero prendemos el Canvas para que se vea la magia
                 cinematica.gameObject.SetActive(true);
-                // Luego iniciamos la cinemática
                 cinematica.IniciarDormir();
             }
         }

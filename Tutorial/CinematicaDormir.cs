@@ -33,84 +33,80 @@ public class CinematicaDormir : MonoBehaviour
     IEnumerator SecuenciaDormirYDespertar()
     {
         // --- FASE 1: PREPARACIÓN Y TRANSICIÓN A CINEMÁTICA ---
-        // Apagamos el UI del juego (el Canvas) para que parezca de película
         if (canvasJuego != null) canvasJuego.SetActive(false);
 
-        // Cerramos los ojos rápido simulando un parpadeo de transición
         yield return StartCoroutine(CerrarOjosMagicamente(velocidadOjos * 1.5f));
 
-        // Hacemos el cambio mágico: Apagamos al jugador real y prendemos la cámara de cine "De Pie"
+        // ¡MAGIA NUEVA! Tomamos la cámara de tus propios ojos (Main Camera)
+        Camera camaraTusOjos = Camera.main; 
+        
         if (jugadorReal != null) jugadorReal.SetActive(false);
         camaraCinematica.gameObject.SetActive(true);
-        camaraCinematica.transform.position = puntoDePie.position;
-        camaraCinematica.transform.rotation = puntoDePie.rotation;
 
-        // Abrimos los ojos para ver desde la nueva cámara
+        // Ponemos la cámara de cine EXACTAMENTE donde estaban tus ojos al picar el botón
+        if (camaraTusOjos != null)
+        {
+            camaraCinematica.transform.position = camaraTusOjos.transform.position;
+            camaraCinematica.transform.rotation = camaraTusOjos.transform.rotation;
+        }
+        else 
+        {
+            camaraCinematica.transform.position = puntoDePie.position;
+            camaraCinematica.transform.rotation = puntoDePie.rotation;
+        }
+
         yield return StartCoroutine(AbrirOjosMagicamente(velocidadOjos * 1.5f));
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.2f); // Pausa súper cortita
 
-        // --- FASE 2: IR A LA CAMA ---
-        // De pie a sentado
-        yield return StartCoroutine(MoverCamara(puntoDePie, puntoSentado, tiempoSentarse));
-        yield return new WaitForSeconds(0.5f);
+        // --- FASE 2: IR A LA CAMA (FLUIDO) ---
+        // Usamos una nueva función para movernos desde donde estamos parados actualmente hasta sentarnos
+        yield return StartCoroutine(MoverCamaraDesdeActual(puntoSentado, tiempoSentarse));
+        yield return new WaitForSeconds(0.2f);
 
         // De sentado a acostado
         yield return StartCoroutine(MoverCamara(puntoSentado, puntoAcostado, tiempoAcostarse));
-        yield return new WaitForSeconds(1f);
+        
+        // ¡REMOVIMOS LA PAUSA LARGA! Directo a cerrar los ojitos.
 
-        // --- FASE 3: QUEDARSE DORMIDO (PARPADEOS LENTOS) ---
-        // Primer parpadeo de sueño (lento)
+        // --- FASE 3: QUEDARSE DORMIDO ---
         yield return StartCoroutine(Parpadear(0.5f, velocidadOjos * 0.7f));
-        yield return new WaitForSeconds(1f);
-
-        // Segundo parpadeo más pesado
         yield return StartCoroutine(Parpadear(0.8f, velocidadOjos * 0.5f));
-        yield return new WaitForSeconds(1f);
-
-        // Cerrar los ojos definitivamente por el cansancio
         yield return StartCoroutine(CerrarOjosMagicamente(velocidadOjos * 0.4f));
 
         // --- FASE 4: TRANSICIÓN AL DÍA 2 ---
-        yield return new WaitForSeconds(2f); // Tiempo en negro total para descansar
+        yield return new WaitForSeconds(2f); 
 
         if (textoDiaHora != null)
         {
             textoDiaHora.gameObject.SetActive(true);
-            textoDiaHora.text = "DÍA 2\n09:00 AM"; // ¡El nuevo día!
-            yield return new WaitForSeconds(4f); // Tiempo para leer con tensión
+            textoDiaHora.text = "DÍA 2\n09:00 AM"; 
+            yield return new WaitForSeconds(4f); 
             textoDiaHora.gameObject.SetActive(false);
         }
 
         // --- FASE 5: DESPERTAR AL DÍA SIGUIENTE ---
         yield return new WaitForSeconds(1f);
-
-        // Parpadeo corto para despertar
         yield return StartCoroutine(Parpadear(0.4f, velocidadOjos));
-        yield return new WaitForSeconds(0.5f);
-
-        // Abre los ojos totalmente
+        yield return new WaitForSeconds(0.2f);
         yield return StartCoroutine(AbrirOjosMagicamente(velocidadOjos));
-        yield return new WaitForSeconds(1f);
-
-        // Se sienta en la cama
-        yield return StartCoroutine(MoverCamara(puntoAcostado, puntoSentado, tiempoSentarse));
         yield return new WaitForSeconds(0.5f);
 
-        // Se levanta de la cama
+        // Se sienta
+        yield return StartCoroutine(MoverCamara(puntoAcostado, puntoSentado, tiempoSentarse));
+        yield return new WaitForSeconds(0.2f);
+
+        // Se levanta
         yield return StartCoroutine(MoverCamara(puntoSentado, puntoDePie, tiempoAcostarse));
         yield return new WaitForSeconds(0.5f);
 
-        // --- FASE 6: DEVOLVER EL CONTROL AL JUGADOR ---
-        // Parpadeo de transición final
+        // --- FASE 6: DEVOLVER EL CONTROL ---
         yield return StartCoroutine(CerrarOjosMagicamente(velocidadOjos * 1.5f));
 
-        // Apagamos la cámara de cine y encendemos al jugador real
         camaraCinematica.gameObject.SetActive(false);
         if (jugadorReal != null) jugadorReal.SetActive(true);
 
         yield return StartCoroutine(AbrirOjosMagicamente(velocidadOjos * 1.5f));
 
-        // Devolvemos la UI a la normalidad
         if (canvasJuego != null) canvasJuego.SetActive(true);
     }
 
@@ -180,6 +176,23 @@ public class CinematicaDormir : MonoBehaviour
 
         parpadoSuperior.sizeDelta = new Vector2(parpadoSuperior.sizeDelta.x, 0);
         parpadoInferior.sizeDelta = new Vector2(parpadoInferior.sizeDelta.x, 0);
+    }
+
+    // ¡NUEVA CORRUTINA! Para calcular el movimiento desde tu posición actual exacta
+    IEnumerator MoverCamaraDesdeActual(Transform destino, float duracion)
+    {
+        Vector3 posicionInicial = camaraCinematica.transform.position;
+        Quaternion rotacionInicial = camaraCinematica.transform.rotation;
+        float t = 0;
+        
+        while (t < 1f)
+        {
+            t += Time.deltaTime / duracion;
+            float curvaSmooth = Mathf.SmoothStep(0f, 1f, t);
+            camaraCinematica.transform.position = Vector3.Lerp(posicionInicial, destino.position, curvaSmooth);
+            camaraCinematica.transform.rotation = Quaternion.Slerp(rotacionInicial, destino.rotation, curvaSmooth);
+            yield return null;
+        }
     }
 
     IEnumerator MoverCamara(Transform inicio, Transform destino, float duracion)
