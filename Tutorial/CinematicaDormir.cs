@@ -65,8 +65,6 @@ public class CinematicaDormir : MonoBehaviour
 
         // De sentado a acostado
         yield return StartCoroutine(MoverCamara(puntoSentado, puntoAcostado, tiempoAcostarse));
-        
-        // ¡REMOVIMOS LA PAUSA LARGA! Directo a cerrar los ojitos.
 
         // --- FASE 3: QUEDARSE DORMIDO ---
         yield return StartCoroutine(Parpadear(0.5f, velocidadOjos * 0.7f));
@@ -103,7 +101,14 @@ public class CinematicaDormir : MonoBehaviour
         yield return StartCoroutine(CerrarOjosMagicamente(velocidadOjos * 1.5f));
 
         camaraCinematica.gameObject.SetActive(false);
-        if (jugadorReal != null) jugadorReal.SetActive(true);
+        
+        // ¡NUEVO! Teletransportamos al jugador real al punto de pie exacto antes de encenderlo
+        if (jugadorReal != null) 
+        {
+            jugadorReal.transform.position = puntoDePie.position;
+            jugadorReal.transform.rotation = puntoDePie.rotation;
+            jugadorReal.SetActive(true);
+        }
 
         yield return StartCoroutine(AbrirOjosMagicamente(velocidadOjos * 1.5f));
 
