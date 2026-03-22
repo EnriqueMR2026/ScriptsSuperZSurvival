@@ -6,11 +6,10 @@ public class CamaTutorial : MonoBehaviour
     {
         ManejadorTutorial tutorial = FindFirstObjectByType<ManejadorTutorial>();
         
-        // ¡CANDADO ACTIVO! Solo te deja dormir EXACTAMENTE en el paso 4 (Noche del Día 1). 
-        // Si avanzas al paso 5 (Amanecer del Día 2), ya no hará nada.
-        if (tutorial != null && tutorial.pasoActual == 4)
+        // ¡CORRECCIÓN! El paso correcto para ir a dormir después de limpiar la zona es el 5
+        if (tutorial != null && tutorial.pasoActual == 5)
         {
-            // Avanza al paso 5 (Día 2) para bloquear la cama
+            // Avanza al paso 6 para que el texto de la misión desaparezca y bloquee la cama
             tutorial.AvanzarTutorial();
             
             CinematicaDormir cinematica = FindFirstObjectByType<CinematicaDormir>(FindObjectsInactive.Include);
