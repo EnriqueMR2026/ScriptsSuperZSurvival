@@ -75,9 +75,15 @@ public class CinematicaDespertar : MonoBehaviour
 
         // 4. Activamos el canvas del juego y apagamos el de la cinemática
         if (canvasJuego != null) canvasJuego.SetActive(true); 
+
+        // 5. Le avisamos al tutorial que la cinemática ya terminó
+        ManejadorTutorial tutorial = FindFirstObjectByType<ManejadorTutorial>();
+        if (tutorial != null)
+        {
+            tutorial.IniciarPrimeraMisionConRetraso();
+        }
+
         gameObject.SetActive(false); 
-        
-        //Debug.Log("¡Secuencia completada con transición fluida!");
     }
 
     // --- CORRUTINAS DE PARPADEO Y TRANSICIÓN --- //
