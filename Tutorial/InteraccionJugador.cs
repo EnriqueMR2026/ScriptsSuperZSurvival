@@ -121,40 +121,70 @@ public class InteraccionJugador : MonoBehaviour
             if (armaEnSlotPrincipal == TipoHerramienta.CuerpoACuerpo && !tieneCuchillo) return;
         }
 
-        // 1. Asignamos la herramienta dependiendo de qué botón del cinturón tocaste
-        if (indiceSlot == -1) herramientaActual = TipoHerramienta.Ninguno; // Para apagar todo al inicio
+        // 1. Asignamos la herramienta
+        if (indiceSlot == -1) herramientaActual = TipoHerramienta.Ninguno; 
         else if (indiceSlot == 0) herramientaActual = TipoHerramienta.Comida;
         else if (indiceSlot == 1) herramientaActual = TipoHerramienta.Hacha;
         else if (indiceSlot == 2) herramientaActual = TipoHerramienta.Pico;
         else if (indiceSlot == 3) herramientaActual = armaEnSlotPrincipal;
-        else if (indiceSlot == 4) return; // El slot 4 (arriba) no se puede "equipar" directo, solo se intercambia
+        else if (indiceSlot == 4) return; 
 
-        // 2. Cambiamos el icono del botón de acción (Blindado) y mostramos/ocultamos botones
+        // 2. Activamos el modelo 3D correcto (¡Lo movemos arriba para poder leer su DNI!)
+        if (objetoComida != null) objetoComida.SetActive(herramientaActual == TipoHerramienta.Comida);
+        if (objetoHacha != null) objetoHacha.SetActive(herramientaActual == TipoHerramienta.Hacha);
+        if (objetoPico != null) objetoPico.SetActive(herramientaActual == TipoHerramienta.Pico);
+        if (objetoArma != null) objetoArma.SetActive(herramientaActual == TipoHerramienta.ArmaFuego);
+        if (objetoCuerpoACuerpo != null) objetoCuerpoACuerpo.SetActive(herramientaActual == TipoHerramienta.CuerpoACuerpo);
+
+        if (herramientaActual == TipoHerramienta.Comida) modeloActivo = objetoComida;
+        else if (herramientaActual == TipoHerramienta.Hacha) modeloActivo = objetoHacha;
+        else if (herramientaActual == TipoHerramienta.Pico) modeloActivo = objetoPico;
+        else if (herramientaActual == TipoHerramienta.ArmaFuego) modeloActivo = objetoArma;
+        else if (herramientaActual == TipoHerramienta.CuerpoACuerpo) modeloActivo = objetoCuerpoACuerpo;
+        else if (herramientaActual == TipoHerramienta.Ninguno) modeloActivo = null;
+
+        // 3. ¡MAGIA DEL DNI! Leemos los datos del modelo que acabamos de encender
         if (iconoBotonAccion != null)
         {
-            // ¡NUEVO! Apagamos el botón de acción si tenemos las manos vacías
-            iconoBotonAccion.gameObject.SetActive(herramientaActual != TipoHerramienta.Ninguno);
+            // Ocultamos el botón de acción por completo si tenemos las manos vacías (¡Soluciona tu problema del engranaje flotante!)
+            // Nota: Para que el engranaje desaparezca, asegúrate de que 'iconoBotonAccion' en Unity sea el objeto PADRE que tiene todo el botón.
+            iconoBotonAccion.transform.parent.gameObject.SetActive(herramientaActual != TipoHerramienta.Ninguno);
+            
+            Sprite fotoAccion = spriteMano; // Por defecto
+            bool requiereBalas = false;
 
-            if (herramientaActual == TipoHerramienta.Comida) iconoBotonAccion.sprite = spriteManzana;
-            else if (herramientaActual == TipoHerramienta.Hacha) iconoBotonAccion.sprite = spriteHacha;
-            else if (herramientaActual == TipoHerramienta.Pico) iconoBotonAccion.sprite = spritePico;
-            else if (herramientaActual == TipoHerramienta.ArmaFuego) iconoBotonAccion.sprite = spriteBala;
-            else if (herramientaActual == TipoHerramienta.CuerpoACuerpo) iconoBotonAccion.sprite = spriteMano; 
-            else if (herramientaActual == TipoHerramienta.Ninguno) iconoBotonAccion.sprite = spriteMano;
+            if (modeloActivo != null)
+            {
+                // Buscamos cuál de los 4 scripts tiene puesto para robarle su DNI
+                if (modeloActivo.GetComponent<ControladorArmas>() != null) {
+                    fotoAccion = modeloActivo.GetComponent<ControladorArmas>().iconoBotonAccion;
+                    requiereBalas = modeloActivo.GetComponent<ControladorArmas>().usaBalas;
+                }
+                else if (modeloActivo.GetComponent<ControladorCuerpoACuerpo>() != null) {
+                    fotoAccion = modeloActivo.GetComponent<ControladorCuerpoACuerpo>().iconoBotonAccion;
+                    requiereBalas = modeloActivo.GetComponent<ControladorCuerpoACuerpo>().usaBalas;
+                }
+                else if (modeloActivo.GetComponent<ControladorConsumibles>() != null) {
+                    fotoAccion = modeloActivo.GetComponent<ControladorConsumibles>().iconoBotonAccion;
+                    requiereBalas = modeloActivo.GetComponent<ControladorConsumibles>().usaBalas;
+                }
+                else if (modeloActivo.GetComponent<ControladorHerramientas>() != null) {
+                    fotoAccion = modeloActivo.GetComponent<ControladorHerramientas>().iconoBotonAccion;
+                    requiereBalas = modeloActivo.GetComponent<ControladorHerramientas>().usaBalas;
+                }
+            }
+
+            iconoBotonAccion.sprite = fotoAccion;
+            
+            // ¡El DNI decide si aparece el botón de recargar completo! (Asegúrate de arrastrar el PADRE a botonRecargarObj)
+            if (botonRecargarObj != null) botonRecargarObj.SetActive(requiereBalas);
         }
 
-        // ¡NUEVO! Apagamos el botón de recargar si no tenemos un arma de fuego
-        if (botonRecargarObj != null)
-        {
-            botonRecargarObj.SetActive(herramientaActual == TipoHerramienta.ArmaFuego);
-        }
-
-        // 3. Resaltamos visualmente el slot
+        // 4. Resaltamos visualmente el slot
         for (int i = 0; i < slotsCinturon.Length; i++)
         {
             if (slotsCinturon[i] == null) continue; 
-
-            // Solo resaltamos si tocamos un slot válido (no -1)
+            
             if (i == indiceSlot && indiceSlot != -1)
             {
                 slotsCinturon[i].color = colorSeleccionado;
@@ -166,21 +196,6 @@ public class InteraccionJugador : MonoBehaviour
                 slotsCinturon[i].rectTransform.localScale = Vector3.one;
             }
         }
-
-        // 4. Activamos el modelo 3D correcto
-        if (objetoComida != null) objetoComida.SetActive(herramientaActual == TipoHerramienta.Comida);
-        if (objetoHacha != null) objetoHacha.SetActive(herramientaActual == TipoHerramienta.Hacha);
-        if (objetoPico != null) objetoPico.SetActive(herramientaActual == TipoHerramienta.Pico);
-        if (objetoArma != null) objetoArma.SetActive(herramientaActual == TipoHerramienta.ArmaFuego);
-        if (objetoCuerpoACuerpo != null) objetoCuerpoACuerpo.SetActive(herramientaActual == TipoHerramienta.CuerpoACuerpo);
-
-        // Guardamos el modelo activo
-        if (herramientaActual == TipoHerramienta.Comida) modeloActivo = objetoComida;
-        else if (herramientaActual == TipoHerramienta.Hacha) modeloActivo = objetoHacha;
-        else if (herramientaActual == TipoHerramienta.Pico) modeloActivo = objetoPico;
-        else if (herramientaActual == TipoHerramienta.ArmaFuego) modeloActivo = objetoArma;
-        else if (herramientaActual == TipoHerramienta.CuerpoACuerpo) modeloActivo = objetoCuerpoACuerpo;
-        else if (herramientaActual == TipoHerramienta.Ninguno) modeloActivo = null;
     }
 
     // ¡NUEVA FUNCIÓN! Para que la tienda o los objetos del suelo la llamen
