@@ -5,12 +5,8 @@ using TMPro;
 
 public class InteraccionJugador : MonoBehaviour
 {
-    [Header("Sprites de Iconos")]
-    public Sprite spriteBala;
-    public Sprite spritePico;
-    public Sprite spriteHacha;
-    public Sprite spriteManzana; // Para la comida
-    public Sprite spriteMano;
+    [Header("Sprites por Defecto")]
+    public Sprite spriteMano; // Solo dejamos este para cuando tengas las manos vacías
 
     [Header("Referencias UI")]
     public Image iconoBotonAccion;
@@ -41,11 +37,8 @@ public class InteraccionJugador : MonoBehaviour
 
     [Header("Botones Extras UI")]
     public GameObject botonRecargarObj;
-
-    [Header("Configuración de Cooldowns")]
-    public float cooldownRecursos = 0.9f; 
-    public float cooldownArma = 0.3f; 
     
+    // Variables internas de control de tiempo
     private float tiempoSiguienteAccion = 0f;
     private float cooldownActualUsado = 0.1f; 
     private InventarioJugador inventario;
@@ -57,7 +50,7 @@ public class InteraccionJugador : MonoBehaviour
     public float velocidadSuavizadoArma = 10f;
     private Vector3 posicionOriginalCamara;
 
-    // ¡NUEVA VARIABLE! Para saber si tenemos el dedo pegado a la pantalla
+    // Para saber si tenemos el dedo pegado a la pantalla
     private bool manteniendoBotonAccion = false;
 
     [Header("Modelos 3D de Herramientas")]
@@ -66,21 +59,8 @@ public class InteraccionJugador : MonoBehaviour
     public GameObject objetoPico;     
     public GameObject objetoArma;     // El modelo 3D del arma en las manos
     public GameObject objetoCuerpoACuerpo;
-
-    [Header("Posiciones Hacha")]
-    public Vector3 posEsperaHacha; public Vector3 rotEsperaHacha;
-    public Vector3 posAccionHacha; public Vector3 rotAccionHacha;
-
-    [Header("Posiciones Pico")]
-    public Vector3 posEsperaPico; public Vector3 rotEsperaPico;
-    public Vector3 posAccionPico; public Vector3 rotAccionPico;
     
     private GameObject modeloActivo;
-
-    [Header("Sonidos de Recolección")]
-    public AudioSource audioSourceJugador; // Arrastra a tu jugador aquí en el inspector para que emita el sonido
-    public AudioClip sonidoTalar;
-    public AudioClip sonidoPicar;
 
     void Start()
     {
