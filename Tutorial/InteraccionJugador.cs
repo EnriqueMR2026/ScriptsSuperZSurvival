@@ -618,6 +618,19 @@ public class InteraccionJugador : MonoBehaviour
         }
     }
 
+    // ¡NUEVA FUNCIÓN! El intermediario inteligente para recargar
+    public void RecargarArmaActual()
+    {
+        if (modeloActivo != null)
+        {
+            ControladorArmas armaFuego = modeloActivo.GetComponent<ControladorArmas>();
+            if (armaFuego != null)
+            {
+                armaFuego.IniciarRecarga();
+            }
+        }
+    }
+
     // ¡NUEVA FUNCIÓN! Regalo de Modo Libre
     public void DesbloquearArmasModoLibre()
     {
