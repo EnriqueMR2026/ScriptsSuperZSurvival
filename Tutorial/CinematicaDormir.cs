@@ -77,7 +77,8 @@ public class CinematicaDormir : MonoBehaviour
         {
             if (luz.type == LightType.Directional)
             {
-                luz.intensity = 1.1f;
+                // ¡CORRECCIÓN! Intensidad a 1.5 como pediste para que brille precioso
+                luz.intensity = 1.5f;
                 // Transformamos tu color Hexadecimal a formato de Unity
                 Color colorDia;
                 if (ColorUtility.TryParseHtmlString("#FFF3CD", out colorDia))
@@ -98,7 +99,7 @@ public class CinematicaDormir : MonoBehaviour
             if (fogata.luzFogata != null) fogata.luzFogata.enabled = false;
         }
         
-        // 3. Apagamos la niebla de noche para que el cielo se vea clarito
+        // 3. Apagamos la niebla roja de terror para que el cielo se vea clarito
         RenderSettings.fog = false;
 
         yield return new WaitForSeconds(2f); 
