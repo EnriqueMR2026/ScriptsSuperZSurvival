@@ -148,6 +148,13 @@ public class CinematicaDormir : MonoBehaviour
         yield return StartCoroutine(AbrirOjosMagicamente(velocidadOjos * 1.5f));
 
         if (canvasJuego != null) canvasJuego.SetActive(true);
+
+        // ¡MAGIA PARA EL DÍA 2!
+        ManejadorTutorial tutorial = Object.FindFirstObjectByType<ManejadorTutorial>();
+        if (tutorial != null)
+        {
+            tutorial.IniciarDiaDos();
+        }
     }
 
     // --- CORRUTINAS MATEMÁTICAS --- //
