@@ -363,21 +363,8 @@ public class InteraccionJugador : MonoBehaviour
     // Esta es tu lógica original intacta, solo le cambiamos el nombre
     public void TocarBotonCinturonNormal(int indiceBoton)
     {
-        if (indiceBoton == 4)
-        {
-            TipoHerramienta temporal = armaEnSlotPrincipal;
-            armaEnSlotPrincipal = armaEnSlotSecundario;
-            armaEnSlotSecundario = temporal;
-
-            if (slotsCinturon.Length > 4 && slotsCinturon[3] != null && slotsCinturon[4] != null)
-            {
-                Sprite imagenTemporal = slotsCinturon[3].sprite;
-                slotsCinturon[3].sprite = slotsCinturon[4].sprite;
-                slotsCinturon[4].sprite = imagenTemporal;
-            }
-            indiceBoton = 3;
-        }
-
+        // ¡ADIÓS AL CÓDIGO VIEJO DE INTERCAMBIO QUE ARRUINABA TODO!
+        // Ahora el slot que tocas, es el slot que se equipa directo en la memoria nueva.
         CambiarHerramienta(indiceBoton);
     }
 
