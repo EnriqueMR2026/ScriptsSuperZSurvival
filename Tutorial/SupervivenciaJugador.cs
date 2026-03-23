@@ -15,6 +15,8 @@ public class SupervivenciaJugador : MonoBehaviour
     [Header("UI")]
     public Image barraSalud;
     public Image barraHambre;
+    public TextMeshProUGUI textoSalud;
+    public TextMeshProUGUI textoHambre;
 
     [Header("Efectos de Daño")]
     public Image pantallaRoja; // Crea una imagen roja en tu Canvas, ponle transparencia 0, y arrástrala aquí
@@ -71,6 +73,10 @@ public class SupervivenciaJugador : MonoBehaviour
     {
         if (barraSalud != null) barraSalud.fillAmount = saludActual / 100f;
         if (barraHambre != null) barraHambre.fillAmount = hambreActual / 100f;
+
+        // ¡NUEVO! Convertimos el valor a número entero (sin decimales) y lo mostramos
+        if (textoSalud != null) textoSalud.text = Mathf.CeilToInt(saludActual).ToString();
+        if (textoHambre != null) textoHambre.text = Mathf.CeilToInt(hambreActual).ToString();
     }
 
     public void RecibirDaño(float cantidad)
