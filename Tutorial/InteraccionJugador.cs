@@ -206,9 +206,21 @@ public class InteraccionJugador : MonoBehaviour
         else if (herramientaNueva == TipoHerramienta.CuerpoACuerpo)
         {
             tieneCuchillo = true;
-            armaEnSlotPrincipal = TipoHerramienta.CuerpoACuerpo; // Ponemos el cuchillo como arma principal
-            if (slotsCinturon.Length > 3 && slotsCinturon[3] != null) slotsCinturon[3].gameObject.SetActive(true);
-            CambiarHerramienta(3);
+            armaEnSlotSecundario = TipoHerramienta.CuerpoACuerpo; // ¡CORRECCIÓN! Va a tu slot secundario (4)
+            
+            // Buscamos tu cuchillo en la primera posición de tu mochila de armas secundarias para robarle su DNI
+            if (listaArmasSecundarias.Length > 0 && listaArmasSecundarias[0] != null)
+            {
+                ControladorCuerpoACuerpo scriptCuchillo = listaArmasSecundarias[0].GetComponent<ControladorCuerpoACuerpo>();
+                if (scriptCuchillo != null && slotsCinturon.Length > 4 && slotsCinturon[4] != null)
+                {
+                    slotsCinturon[4].sprite = scriptCuchillo.iconoCinturon;
+                    slotsCinturon[4].gameObject.SetActive(true);
+                }
+            }
+            
+            // Forzamos que lo equipes simulando que tocaste el slot 4 de tu pantalla
+            TocarBotonCinturonNormal(4);
         }
         else if (herramientaNueva == TipoHerramienta.Comida)
         {
