@@ -37,6 +37,14 @@ public class SupervivenciaJugador : MonoBehaviour
         {
             // Si no hay hambre, perdemos salud
             saludActual -= dañoPorHambre * Time.deltaTime;
+
+            // ¡NUEVO! Latido rojo de alerta por inanición (hambre)
+            if (pantallaRoja != null)
+            {
+                // Usamos matemáticas (Seno) para hacer un efecto de latido continuo
+                float alfaLatido = Mathf.Abs(Mathf.Sin(Time.time * 3f)) * colorDaño.a;
+                pantallaRoja.color = new Color(colorDaño.r, colorDaño.g, colorDaño.b, alfaLatido);
+            }
         }
 
         // Evitamos que los valores se salgan de 0 a 100
@@ -45,8 +53,8 @@ public class SupervivenciaJugador : MonoBehaviour
 
         ActualizarUI();
 
-        // Efecto visual de desvanecer la pantalla roja de daño poco a poco
-        if (pantallaRoja != null && pantallaRoja.color.a > 0)
+        // Efecto visual de desvanecer la pantalla roja poco a poco (Solo si NO nos estamos muriendo de hambre)
+        if (hambreActual > 0 && pantallaRoja != null && pantallaRoja.color.a > 0)
         {
             pantallaRoja.color = Color.Lerp(pantallaRoja.color, Color.clear, velocidadDesvanecimientoDaño * Time.deltaTime);
         }
