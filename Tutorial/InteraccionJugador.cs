@@ -518,4 +518,67 @@ public class InteraccionJugador : MonoBehaviour
             camaraTransform.localPosition -= Vector3.forward * intensidadRetroceso;
         }
     }
+
+    // --- NUEVAS FUNCIONES PARA LOS BOTONES DE LAS PERSIANAS ---
+
+    public void ElegirArmaPrincipal(int indiceArma)
+    {
+        if (indiceArma < listaArmasPrincipales.Length && listaArmasPrincipales[indiceArma] != null)
+        {
+            // 1. Apagamos todas las armas principales para que no se encimen modelos 3D
+            foreach (GameObject arma in listaArmasPrincipales) { if (arma != null) arma.SetActive(false); }
+
+            // 2. Asignamos la nueva arma como tu modelo activo
+            objetoArma = listaArmasPrincipales[indiceArma];
+            armaEnSlotPrincipal = TipoHerramienta.ArmaFuego;
+
+            // 3. Leemos su DNI y actualizamos la foto del cinturón
+            ControladorArmas script = objetoArma.GetComponent<ControladorArmas>();
+            if (script != null && slotsCinturon.Length > 3 && slotsCinturon[3] != null) 
+            {
+                slotsCinturon[3].sprite = script.iconoCinturon;
+            }
+
+            // 4. Cerramos la persiana visualmente
+            if (panelPersianaPrincipal != null) panelPersianaPrincipal.SetActive(false);
+            persianaAbierta = false;
+            
+            // 5. Refrescamos tus manos para que aparezca el arma nueva de inmediato
+            CambiarHerramienta(3); 
+        }
+    }
+
+    public void ElegirArmaSecundaria(int indiceArma)
+    {
+        if (indiceArma < listaArmasSecundarias.Length && listaArmasSecundarias[indiceArma] != null)
+        {
+            // 1. Apagamos todas las armas secundarias
+            foreach (GameObject arma in listaArmasSecundarias) { if (arma != null) arma.SetActive(false); }
+
+            GameObject armaElegida = listaArmasSecundarias[indiceArma];
+
+            // 2. Leemos su DNI para saber si es pistola o arma blanca y la asignamos
+            if (armaElegida.GetComponent<ControladorArmas>() != null)
+            {
+                armaEnSlotSecundario = TipoHerramienta.ArmaFuego;
+                objetoArma = armaElegida; 
+                if (slotsCinturon.Length > 4 && slotsCinturon[4] != null) 
+                    slotsCinturon[4].sprite = armaElegida.GetComponent<ControladorArmas>().iconoCinturon;
+            }
+            else if (armaElegida.GetComponent<ControladorCuerpoACuerpo>() != null)
+            {
+                armaEnSlotSecundario = TipoHerramienta.CuerpoACuerpo;
+                objetoCuerpoACuerpo = armaElegida;
+                if (slotsCinturon.Length > 4 && slotsCinturon[4] != null) 
+                    slotsCinturon[4].sprite = armaElegida.GetComponent<ControladorCuerpoACuerpo>().iconoCinturon;
+            }
+
+            // 3. Cerramos la persiana
+            if (panelPersianaSecundaria != null) panelPersianaSecundaria.SetActive(false);
+            persianaAbierta = false;
+
+            // 4. Forzamos el intercambio de armas para que se te ponga en las manos
+            TocarBotonCinturonNormal(4);
+        }
+    }
 }
