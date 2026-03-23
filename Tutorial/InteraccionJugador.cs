@@ -233,9 +233,15 @@ public class InteraccionJugador : MonoBehaviour
 
     public void ApretarSlotCinturon(int indiceBoton)
     {
-        // Si tocaste el slot de las armas (3 o 4), empezamos a contar el tiempo
         if (indiceBoton == 3 || indiceBoton == 4)
         {
+            // ¡NUEVO! Si la persiana ya está abierta, la cerramos y abortamos (para que te puedas arrepentir)
+            if (persianaAbierta)
+            {
+                CerrarPersianas();
+                return; 
+            }
+
             slotMantenido = indiceBoton;
             persianaAbierta = false;
             
@@ -244,7 +250,7 @@ public class InteraccionJugador : MonoBehaviour
         }
         else 
         {
-            // Si tocaste comida, hacha o pico (0, 1, 2), se equipan rapidísimo
+            CerrarPersianas(); // Si tocas otra cosa, cerramos por limpieza
             TocarBotonCinturonNormal(indiceBoton);
         }
     }
@@ -253,63 +259,89 @@ public class InteraccionJugador : MonoBehaviour
     {
         if (slotMantenido == indiceBoton)
         {
-            // Apagamos el cronómetro porque ya quitaste el dedo de la pantalla
             if (rutinaCronometro != null) StopCoroutine(rutinaCronometro);
             
-            // Si soltaste el dedo rápido (antes de que se abriera la persiana), cuenta como toque normal
             if (!persianaAbierta)
             {
                 TocarBotonCinturonNormal(indiceBoton);
             }
             
-            slotMantenido = -1; // Reiniciamos el sensor
+            slotMantenido = -1; 
         }
     }
 
     private IEnumerator CronometroPersiana(int indice)
     {
-        // El juego espera pacientemente los 0.4 segundos que le configuramos
         yield return new WaitForSeconds(tiempoParaDesplegar);
-        
-        // Si no has soltado el dedo, ¡se abre la magia visual!
         persianaAbierta = true;
         AbrirPersiana(indice);
     }
 
+    public void CerrarPersianas()
+    {
+        if (panelPersianaPrincipal != null) panelPersianaPrincipal.SetActive(false);
+        if (panelPersianaSecundaria != null) panelPersianaSecundaria.SetActive(false);
+        persianaAbierta = false;
+    }
+
     private void AbrirPersiana(int indiceSlot)
     {
-        // 1. Elegimos qué panel y qué lista de tu mochila vamos a usar
         GameObject panelAUsar = (indiceSlot == 3) ? panelPersianaPrincipal : panelPersianaSecundaria;
         Image[] botonesAUsar = (indiceSlot == 3) ? botonesPersianaPrincipal : botonesPersianaSecundaria;
         GameObject[] listaAUsar = (indiceSlot == 3) ? listaArmasPrincipales : listaArmasSecundarias;
 
-        // 2. Apagamos ambos por precaución, y encendemos solo el que pediste
-        if (panelPersianaPrincipal != null) panelPersianaPrincipal.SetActive(false);
-        if (panelPersianaSecundaria != null) panelPersianaSecundaria.SetActive(false);
-        
+        CerrarPersianas(); // Limpiamos antes de abrir
         if (panelAUsar != null) panelAUsar.SetActive(true);
+        persianaAbierta = true;
         
-        // 3. ¡LA MAGIA DEL DNI! Llenamos los botoncitos de ese panel
-        for (int i = 0; i < botonesAUsar.Length; i++)
+        int botonActual = 0; // Para ir llenando los botones disponibles de abajo hacia arriba
+
+        for (int i = 0; i < listaAUsar.Length; i++)
         {
-            if (i < listaAUsar.Length && listaAUsar[i] != null)
+            if (listaAUsar[i] != null)
             {
-                botonesAUsar[i].gameObject.SetActive(true);
-                
-                ControladorArmas armaFuego = listaAUsar[i].GetComponent<ControladorArmas>();
-                if (armaFuego != null) botonesAUsar[i].sprite = armaFuego.iconoCinturon;
-                
-                ControladorCuerpoACuerpo armaMelee = listaAUsar[i].GetComponent<ControladorCuerpoACuerpo>();
-                if (armaMelee != null) botonesAUsar[i].sprite = armaMelee.iconoCinturon;
-            }
-            else
-            {
-                // Escondemos los botoncitos que sobren para que se vea limpio
-                if (botonesAUsar[i] != null) botonesAUsar[i].gameObject.SetActive(false); 
+                // 1. Verificamos si esta arma es la que ya tienes equipada
+                bool esArmaEquipada = false;
+                if (indiceSlot == 3 && listaAUsar[i] == objetoArma && armaEnSlotPrincipal == TipoHerramienta.ArmaFuego) esArmaEquipada = true;
+                if (indiceSlot == 4)
+                {
+                    if (armaEnSlotSecundario == TipoHerramienta.ArmaFuego && listaAUsar[i] == objetoArma) esArmaEquipada = true;
+                    if (armaEnSlotSecundario == TipoHerramienta.CuerpoACuerpo && listaAUsar[i] == objetoCuerpoACuerpo) esArmaEquipada = true;
+                }
+
+                // 2. Si NO la traes puesta, la ponemos en la persiana
+                if (!esArmaEquipada && botonActual < botonesAUsar.Length)
+                {
+                    botonesAUsar[botonActual].gameObject.SetActive(true);
+                    
+                    ControladorArmas armaFuego = listaAUsar[i].GetComponent<ControladorArmas>();
+                    if (armaFuego != null) botonesAUsar[botonActual].sprite = armaFuego.iconoCinturon;
+                    
+                    ControladorCuerpoACuerpo armaMelee = listaAUsar[i].GetComponent<ControladorCuerpoACuerpo>();
+                    if (armaMelee != null) botonesAUsar[botonActual].sprite = armaMelee.iconoCinturon;
+
+                    // ¡MAGIA PURA! Le enseñamos al botón a qué arma llamar desde el código
+                    int indiceCapturado = i; 
+                    Button btn = botonesAUsar[botonActual].GetComponent<Button>();
+                    if (btn != null)
+                    {
+                        btn.onClick.RemoveAllListeners(); // Borramos funciones viejas
+                        if (indiceSlot == 3) btn.onClick.AddListener(() => ElegirArmaPrincipal(indiceCapturado));
+                        else btn.onClick.AddListener(() => ElegirArmaSecundaria(indiceCapturado));
+                    }
+
+                    botonActual++; // Pasamos al siguiente botón visual
+                }
             }
         }
-    }
 
+        // 3. Escondemos los botones que sobren en blanco (si solo tenías 2 armas y equipaste 1, sobra 1 botón)
+        for (int i = botonActual; i < botonesAUsar.Length; i++)
+        {
+            if (botonesAUsar[i] != null) botonesAUsar[i].gameObject.SetActive(false);
+        }
+    }
+    
     // Esta es tu lógica original intacta, solo le cambiamos el nombre
     public void TocarBotonCinturonNormal(int indiceBoton)
     {
