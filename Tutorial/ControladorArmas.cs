@@ -8,6 +8,11 @@ public class ControladorArmas : MonoBehaviour
     public string nombreArma = "AK-47";
     public float cadenciaDisparo = 0.15f; // Qué tan rápido salen las balas
 
+    [Header("Identificación Visual (El DNI)")]
+    public Sprite iconoCinturon;      // Arrastra aquí la imagen del arma para el slot
+    public Sprite iconoBotonAccion;   // Arrastra aquí la imagen para el botón de atacar (ej. una bala)
+    public bool usaBalas = true;      // Si está encendido, el juego sabrá que debe mostrar el engranaje de recargar
+
     [Header("Posicionamiento Individual")]
     public Vector3 posEspera;         
     public Vector3 rotEspera;         
