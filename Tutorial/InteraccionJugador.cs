@@ -6,7 +6,7 @@ using TMPro;
 public class InteraccionJugador : MonoBehaviour
 {
     [Header("Sprites por Defecto")]
-    public Sprite spriteMano; // Solo dejamos este para cuando tengas las manos vacías
+    public Sprite spriteMano; 
 
     [Header("Referencias UI")]
     public Image iconoBotonAccion;
@@ -17,7 +17,6 @@ public class InteraccionJugador : MonoBehaviour
     public float distanciaInteraccion = 5f;
     public LayerMask capaInteractuable;
 
-    // 4 Slots fijos (¡Añadimos 'Ninguno' para las manos vacías!)
     public enum TipoHerramienta { Ninguno, Comida, Hacha, Pico, ArmaFuego, CuerpoACuerpo }
 
     [Header("Desbloqueos (Tutorial)")]
@@ -30,10 +29,18 @@ public class InteraccionJugador : MonoBehaviour
     public TipoHerramienta herramientaActual = TipoHerramienta.ArmaFuego;
 
     [Header("UI del Cinturón")]
-    public Image[] slotsCinturon; // Ahora arrastrarás 4 slots aquí
+    public Image[] slotsCinturon; 
     public Color colorSeleccionado = Color.yellow;
     public Color colorNormal = Color.white;
     public float escalaSeleccionado = 1.2f;
+
+    [Header("Persiana Desplegable (NUEVO)")]
+    public GameObject panelPersiana; 
+    public Image[] botonesPersiana; 
+    public float tiempoParaDesplegar = 0.4f;
+    private int slotMantenido = -1;
+    private float tiempoPresionando = 0f;
+    private bool persianaAbierta = false;
 
     [Header("Botones Extras UI")]
     public GameObject botonRecargarObj;
@@ -54,12 +61,16 @@ public class InteraccionJugador : MonoBehaviour
     private bool manteniendoBotonAccion = false;
 
     [Header("Modelos 3D de Herramientas")]
-    public GameObject objetoComida;   // El modelo 3D del pan o carne
+    public GameObject objetoComida;   
     public GameObject objetoHacha;    
     public GameObject objetoPico;     
-    public GameObject objetoArma;     // El modelo 3D del arma en las manos
+    public GameObject objetoArma;     
     public GameObject objetoCuerpoACuerpo;
     
+    [Header("Arsenal de la Persiana")]
+    public GameObject[] listaArmasPrincipales; // Aquí arrastrarás tu AK47, Uzi, M590
+    public GameObject[] listaArmasSecundarias; // Aquí arrastrarás tu Cuchillo, M500, etc.
+
     private GameObject modeloActivo;
 
     void Start()
@@ -201,25 +212,96 @@ public class InteraccionJugador : MonoBehaviour
         }
     }
 
-    public void TocarBotonCinturon(int indiceBoton)
+    private Coroutine rutinaCronometro; // El motorcito de nuestro reloj táctil
+
+    public void ApretarSlotCinturon(int indiceBoton)
     {
-        // Si tocamos el arma secundaria (botón 5, índice 4)
+        // Si tocaste el slot de las armas (3 o 4), empezamos a contar el tiempo
+        if (indiceBoton == 3 || indiceBoton == 4)
+        {
+            slotMantenido = indiceBoton;
+            persianaAbierta = false;
+            
+            if (rutinaCronometro != null) StopCoroutine(rutinaCronometro);
+            rutinaCronometro = StartCoroutine(CronometroPersiana(indiceBoton));
+        }
+        else 
+        {
+            // Si tocaste comida, hacha o pico (0, 1, 2), se equipan rapidísimo
+            TocarBotonCinturonNormal(indiceBoton);
+        }
+    }
+
+    public void SoltarSlotCinturon(int indiceBoton)
+    {
+        if (slotMantenido == indiceBoton)
+        {
+            // Apagamos el cronómetro porque ya quitaste el dedo de la pantalla
+            if (rutinaCronometro != null) StopCoroutine(rutinaCronometro);
+            
+            // Si soltaste el dedo rápido (antes de que se abriera la persiana), cuenta como toque normal
+            if (!persianaAbierta)
+            {
+                TocarBotonCinturonNormal(indiceBoton);
+            }
+            
+            slotMantenido = -1; // Reiniciamos el sensor
+        }
+    }
+
+    private IEnumerator CronometroPersiana(int indice)
+    {
+        // El juego espera pacientemente los 0.4 segundos que le configuramos
+        yield return new WaitForSeconds(tiempoParaDesplegar);
+        
+        // Si no has soltado el dedo, ¡se abre la magia visual!
+        persianaAbierta = true;
+        AbrirPersiana(indice);
+    }
+
+    private void AbrirPersiana(int indiceSlot)
+    {
+        if (panelPersiana != null) panelPersiana.SetActive(true);
+        
+        // Elegimos qué lista de armas revisar en tu mochila
+        GameObject[] listaUsar = (indiceSlot == 3) ? listaArmasPrincipales : listaArmasSecundarias;
+        
+        for (int i = 0; i < botonesPersiana.Length; i++)
+        {
+            if (i < listaUsar.Length && listaUsar[i] != null)
+            {
+                botonesPersiana[i].gameObject.SetActive(true);
+                
+                // ¡LA MAGIA DEL DNI! Le pedimos su foto al arma para dibujarla en la persiana
+                ControladorArmas armaFuego = listaUsar[i].GetComponent<ControladorArmas>();
+                if (armaFuego != null) botonesPersiana[i].sprite = armaFuego.iconoCinturon;
+                
+                ControladorCuerpoACuerpo armaMelee = listaUsar[i].GetComponent<ControladorCuerpoACuerpo>();
+                if (armaMelee != null) botonesPersiana[i].sprite = armaMelee.iconoCinturon;
+            }
+            else
+            {
+                // Escondemos los botoncitos que sobren para que se vea limpio
+                if (botonesPersiana[i] != null) botonesPersiana[i].gameObject.SetActive(false); 
+            }
+        }
+    }
+
+    // Esta es tu lógica original intacta, solo le cambiamos el nombre
+    public void TocarBotonCinturonNormal(int indiceBoton)
+    {
         if (indiceBoton == 4)
         {
-            // 1. Intercambiamos la memoria interna de las armas
             TipoHerramienta temporal = armaEnSlotPrincipal;
             armaEnSlotPrincipal = armaEnSlotSecundario;
             armaEnSlotSecundario = temporal;
 
-            // 2. Intercambiamos las imágenes para el efecto visual
             if (slotsCinturon.Length > 4 && slotsCinturon[3] != null && slotsCinturon[4] != null)
             {
                 Sprite imagenTemporal = slotsCinturon[3].sprite;
                 slotsCinturon[3].sprite = slotsCinturon[4].sprite;
                 slotsCinturon[4].sprite = imagenTemporal;
             }
-            
-            // 3. Forzamos a que equipe lo que quedó en el slot principal
             indiceBoton = 3;
         }
 
