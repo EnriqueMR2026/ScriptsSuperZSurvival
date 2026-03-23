@@ -255,7 +255,8 @@ public class InteraccionJugador : MonoBehaviour
         if (iconoBotonInteractuar != null)
         {
             bool viendoInteractuable = estaApuntando && hitUpdate.collider.CompareTag("Interactuable");
-            iconoBotonInteractuar.gameObject.SetActive(viendoInteractuable);
+            // ¡CORRECCIÓN! Apagamos al PADRE de la imagen (el engranaje) para que desaparezca todo
+            iconoBotonInteractuar.transform.parent.gameObject.SetActive(viendoInteractuable);
         }
 
         // 2. Suavizado de cámara 
@@ -271,21 +272,7 @@ public class InteraccionJugador : MonoBehaviour
             Vector3 destinoRot = Vector3.zero;
             float velocidadActual = velocidadSuavizadoArma; 
 
-            if (herramientaActual == TipoHerramienta.Hacha)
-            {
-                bool enGolpe = Time.time < (tiempoSiguienteAccion - (cooldownRecursos / 2f));
-                destinoPos = enGolpe ? posAccionHacha : posEsperaHacha;
-                destinoRot = enGolpe ? rotAccionHacha : rotEsperaHacha;
-                velocidadActual = 10f / cooldownRecursos;
-            }
-            else if (herramientaActual == TipoHerramienta.Pico)
-            {
-                bool enGolpe = Time.time < (tiempoSiguienteAccion - (cooldownRecursos / 2f));
-                destinoPos = enGolpe ? posAccionPico : posEsperaPico;
-                destinoRot = enGolpe ? rotAccionPico : rotEsperaPico;
-                velocidadActual = 10f / cooldownRecursos;
-            }
-            else if (herramientaActual == TipoHerramienta.ArmaFuego)
+            if (herramientaActual == TipoHerramienta.ArmaFuego)
             {
                 ControladorArmas armaActiva = modeloActivo.GetComponent<ControladorArmas>();
                 if (armaActiva != null)
@@ -306,7 +293,6 @@ public class InteraccionJugador : MonoBehaviour
                     velocidadActual = 10f / armaMelee.cadenciaAtaque; 
                 }
             }
-            // Posicionamiento de la Comida
             else if (herramientaActual == TipoHerramienta.Comida)
             {
                 ControladorConsumibles comidaActiva = modeloActivo.GetComponent<ControladorConsumibles>();
@@ -316,6 +302,18 @@ public class InteraccionJugador : MonoBehaviour
                     destinoPos = enConsumo ? comidaActiva.posAccion : comidaActiva.posEspera;
                     destinoRot = enConsumo ? comidaActiva.rotAccion : comidaActiva.rotEspera;
                     velocidadActual = 10f / comidaActiva.tiempoConsumo;
+                }
+            }
+            // ¡EL CEREBRO NUEVO PARA TUS HERRAMIENTAS (HACHA/PICO)!
+            else if (herramientaActual == TipoHerramienta.Hacha || herramientaActual == TipoHerramienta.Pico)
+            {
+                ControladorHerramientas herramienta = modeloActivo.GetComponent<ControladorHerramientas>();
+                if (herramienta != null)
+                {
+                    bool enGolpe = Time.time < (tiempoSiguienteAccion - (herramienta.tiempoUso / 2f));
+                    destinoPos = enGolpe ? herramienta.posAccion : herramienta.posEspera;
+                    destinoRot = enGolpe ? herramienta.rotAccion : herramienta.rotEspera;
+                    velocidadActual = 10f / herramienta.tiempoUso;
                 }
             }
 
@@ -358,7 +356,6 @@ public class InteraccionJugador : MonoBehaviour
                     }
                 }
             }
-            // Comer automáticamente si mantienes el botón
             else if (herramientaActual == TipoHerramienta.Comida && modeloActivo != null)
             {
                 ControladorConsumibles comidaActiva = modeloActivo.GetComponent<ControladorConsumibles>();
@@ -367,24 +364,14 @@ public class InteraccionJugador : MonoBehaviour
                     comidaActiva.IntentarConsumir();
                 }
             }
-            // ¡NUEVO! Talar y picar en automático
-            else if ((herramientaActual == TipoHerramienta.Hacha || herramientaActual == TipoHerramienta.Pico) && Time.time >= tiempoSiguienteAccion)
+            // ¡LA CONEXIÓN LIMPIA PARA EL HACHA Y EL PICO!
+            else if ((herramientaActual == TipoHerramienta.Hacha || herramientaActual == TipoHerramienta.Pico) && modeloActivo != null)
             {
-                RaycastHit hit;
-                if (Physics.Raycast(camaraTransform.position, camaraTransform.forward, out hit, distanciaInteraccion, capaInteractuable))
+                ControladorHerramientas herramienta = modeloActivo.GetComponent<ControladorHerramientas>();
+                if (herramienta != null && Time.time >= tiempoSiguienteAccion)
                 {
-                    if (herramientaActual == TipoHerramienta.Hacha && hit.collider.CompareTag("Recurso_Madera"))
-                    {
-                        inventario.AgregarRecurso("Madera", 1);
-                        if (audioSourceJugador != null && sonidoTalar != null) audioSourceJugador.PlayOneShot(sonidoTalar);
-                        AplicarCooldown(cooldownRecursos);
-                    }
-                    else if (herramientaActual == TipoHerramienta.Pico && hit.collider.CompareTag("Recurso_Piedra"))
-                    {
-                        inventario.AgregarRecurso("Piedra", 1);
-                        if (audioSourceJugador != null && sonidoPicar != null) audioSourceJugador.PlayOneShot(sonidoPicar);
-                        AplicarCooldown(cooldownRecursos);
-                    }
+                    herramienta.IntentarUsar(capaInteractuable, camaraTransform, distanciaInteraccion, inventario);
+                    AplicarCooldown(herramienta.tiempoUso);
                 }
             }
         }
