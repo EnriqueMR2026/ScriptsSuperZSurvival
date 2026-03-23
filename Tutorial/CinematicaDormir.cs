@@ -37,13 +37,11 @@ public class CinematicaDormir : MonoBehaviour
 
         yield return StartCoroutine(CerrarOjosMagicamente(velocidadOjos * 1.5f));
 
-        // ¡MAGIA NUEVA! Tomamos la cámara de tus propios ojos (Main Camera)
         Camera camaraTusOjos = Camera.main; 
         
         if (jugadorReal != null) jugadorReal.SetActive(false);
         camaraCinematica.gameObject.SetActive(true);
 
-        // Ponemos la cámara de cine EXACTAMENTE donde estaban tus ojos al picar el botón
         if (camaraTusOjos != null)
         {
             camaraCinematica.transform.position = camaraTusOjos.transform.position;
@@ -56,14 +54,12 @@ public class CinematicaDormir : MonoBehaviour
         }
 
         yield return StartCoroutine(AbrirOjosMagicamente(velocidadOjos * 1.5f));
-        yield return new WaitForSeconds(0.2f); // Pausa súper cortita
+        yield return new WaitForSeconds(0.2f); 
 
         // --- FASE 2: IR A LA CAMA (FLUIDO) ---
-        // Usamos una nueva función para movernos desde donde estamos parados actualmente hasta sentarnos
         yield return StartCoroutine(MoverCamaraDesdeActual(puntoSentado, tiempoSentarse));
         yield return new WaitForSeconds(0.2f);
 
-        // De sentado a acostado
         yield return StartCoroutine(MoverCamara(puntoSentado, puntoAcostado, tiempoAcostarse));
 
         // --- FASE 3: QUEDARSE DORMIDO ---
@@ -71,7 +67,40 @@ public class CinematicaDormir : MonoBehaviour
         yield return StartCoroutine(Parpadear(0.8f, velocidadOjos * 0.5f));
         yield return StartCoroutine(CerrarOjosMagicamente(velocidadOjos * 0.4f));
 
-        // --- FASE 4: TRANSICIÓN AL DÍA 2 ---
+        // --- FASE 4: TRANSICIÓN AL DÍA 2 Y RESETEO DEL MUNDO ---
+        
+        // ¡MAGIA DE AMANECER! Mientras tienes los ojos cerrados, reseteamos el set de grabación
+        
+        // 1. Buscamos el Sol y le ponemos los valores exactos de tu foto
+        Light[] luces = Object.FindObjectsByType<Light>(FindObjectsSortMode.None);
+        foreach (Light luz in luces)
+        {
+            if (luz.type == LightType.Directional)
+            {
+                luz.intensity = 1.1f;
+                // Transformamos tu color Hexadecimal a formato de Unity
+                Color colorDia;
+                if (ColorUtility.TryParseHtmlString("#FFF3CD", out colorDia))
+                {
+                    luz.color = colorDia;
+                }
+                // Tu rotación exacta
+                luz.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
+                break;
+            }
+        }
+
+        // 2. Buscamos la fogata solita y apagamos sus efectos
+        FogataTutorial fogata = Object.FindFirstObjectByType<FogataTutorial>();
+        if (fogata != null)
+        {
+            if (fogata.fuegoParticulas != null) fogata.fuegoParticulas.SetActive(false);
+            if (fogata.luzFogata != null) fogata.luzFogata.enabled = false;
+        }
+        
+        // 3. Apagamos la niebla de noche para que el cielo se vea clarito
+        RenderSettings.fog = false;
+
         yield return new WaitForSeconds(2f); 
 
         if (textoDiaHora != null)
@@ -102,16 +131,13 @@ public class CinematicaDormir : MonoBehaviour
 
         camaraCinematica.gameObject.SetActive(false);
         
-        // ¡NUEVO TRUCO! Llamamos al script del jugador para alinear cuerpo y cámara
         if (jugadorReal != null) 
         {
             jugadorReal.transform.position = puntoDePie.position;
             
-            // Sacamos el script de movimiento y le ordenamos las rotaciones
             MovimientoJugador mov = jugadorReal.GetComponent<MovimientoJugador>();
             if (mov != null)
             {
-                // Le pasamos (90 para el cuerpo en Y, 0 para la cámara en X)
                 mov.ForzarRotacion(90f, 0f);
             }
             
