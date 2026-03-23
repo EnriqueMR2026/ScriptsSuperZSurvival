@@ -39,10 +39,11 @@ public class FogataTutorial : MonoBehaviour
             // ¡CORRECCIÓN! Usamos .enabled aquí también
             if (luzFogata != null) luzFogata.enabled = true; 
 
-            // ¡MAGIA DE TERROR! Cambiamos la niebla a un rojo oscuro y denso
+            // ¡MAGIA DE TERROR! Aplicamos los datos exactos de tu foto para la niebla
             RenderSettings.fog = true;
-            RenderSettings.fogColor = new Color(0.3f, 0f, 0f); // Rojo oscuro
-            RenderSettings.fogDensity = 0.08f;
+            RenderSettings.fogMode = FogMode.Exponential;
+            RenderSettings.fogColor = Color.red; 
+            RenderSettings.fogDensity = 0.03f;
 
             // Despertamos a la horda
             foreach(GameObject z in zombis)
