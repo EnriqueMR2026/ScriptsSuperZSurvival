@@ -29,6 +29,14 @@ public class ProyectilBala : MonoBehaviour
             Instantiate(efectoImpacto, contacto.point, rotacionImpacto);
         }
 
+        // ¡AQUÍ ESTÁ LA MAGIA NUEVA! Le preguntamos al objeto chocado si tiene el código de zombi
+        EnemigoZombi zombi = collision.collider.GetComponent<EnemigoZombi>();
+        if (zombi != null)
+        {
+            // Le bajamos 35 puntos de vida (necesitarás 3 tiros para matar a un zombi de 100 de vida)
+            zombi.RecibirDano(35);
+        }
+
         // 4. Borramos la bala inmediatamente para que no atraviese ni rebote
         Destroy(gameObject);
     }
