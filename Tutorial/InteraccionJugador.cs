@@ -105,10 +105,23 @@ public class InteraccionJugador : MonoBehaviour
     // Memoria de armas para el intercambio táctil
     private TipoHerramienta armaEnSlotPrincipal = TipoHerramienta.ArmaFuego;
     private TipoHerramienta armaEnSlotSecundario = TipoHerramienta.CuerpoACuerpo;
+    
+    // ¡NUEVO! Memoria visual para que nunca se confundan los modelos 3D
+    private GameObject modeloEnSlot3;
+    private GameObject modeloEnSlot4;
+    private bool slotsInicializados = false;
 
     public void CambiarHerramienta(int indiceSlot)
     {
-        // 0. ¡CANDADOS DE DESBLOQUEO! Verificamos si tenemos la herramienta antes de intentar sacarla
+        // 0. Inicialización de seguridad (solo corre la primera vez)
+        if (!slotsInicializados)
+        {
+            modeloEnSlot3 = objetoArma; 
+            modeloEnSlot4 = objetoCuerpoACuerpo; 
+            slotsInicializados = true;
+        }
+
+        // 1. CANDADOS DE DESBLOQUEO
         if (indiceSlot == 1 && !tieneHacha) return;
         if (indiceSlot == 2 && !tienePico) return;
         if (indiceSlot == 3)
@@ -116,42 +129,50 @@ public class InteraccionJugador : MonoBehaviour
             if (armaEnSlotPrincipal == TipoHerramienta.ArmaFuego && !tieneArmaFuego) return;
             if (armaEnSlotPrincipal == TipoHerramienta.CuerpoACuerpo && !tieneCuchillo) return;
         }
+        if (indiceSlot == 4)
+        {
+            if (armaEnSlotSecundario == TipoHerramienta.ArmaFuego && !tieneArmaFuego) return;
+            if (armaEnSlotSecundario == TipoHerramienta.CuerpoACuerpo && !tieneCuchillo) return;
+        }
 
-        // 1. Asignamos la herramienta
+        // 2. Asignamos la herramienta (¡YA NO IGNORAMOS EL 4!)
         if (indiceSlot == -1) herramientaActual = TipoHerramienta.Ninguno; 
         else if (indiceSlot == 0) herramientaActual = TipoHerramienta.Comida;
         else if (indiceSlot == 1) herramientaActual = TipoHerramienta.Hacha;
         else if (indiceSlot == 2) herramientaActual = TipoHerramienta.Pico;
         else if (indiceSlot == 3) herramientaActual = armaEnSlotPrincipal;
-        else if (indiceSlot == 4) return; 
+        else if (indiceSlot == 4) herramientaActual = armaEnSlotSecundario; 
 
-        // 2. Activamos el modelo 3D correcto (¡Lo movemos arriba para poder leer su DNI!)
+        // 3. Activamos el modelo 3D correcto
         if (objetoComida != null) objetoComida.SetActive(herramientaActual == TipoHerramienta.Comida);
         if (objetoHacha != null) objetoHacha.SetActive(herramientaActual == TipoHerramienta.Hacha);
         if (objetoPico != null) objetoPico.SetActive(herramientaActual == TipoHerramienta.Pico);
-        if (objetoArma != null) objetoArma.SetActive(herramientaActual == TipoHerramienta.ArmaFuego);
-        if (objetoCuerpoACuerpo != null) objetoCuerpoACuerpo.SetActive(herramientaActual == TipoHerramienta.CuerpoACuerpo);
+        
+        // Apagamos las armas actuales para evitar empalmes feos
+        if (modeloEnSlot3 != null) modeloEnSlot3.SetActive(false);
+        if (modeloEnSlot4 != null) modeloEnSlot4.SetActive(false);
 
+        // Encendemos solo la que tocaste
+        if (indiceSlot == 3 && modeloEnSlot3 != null) modeloEnSlot3.SetActive(true);
+        if (indiceSlot == 4 && modeloEnSlot4 != null) modeloEnSlot4.SetActive(true);
+
+        // Le decimos al código quién es el modelo activo para que lo mueva
         if (herramientaActual == TipoHerramienta.Comida) modeloActivo = objetoComida;
         else if (herramientaActual == TipoHerramienta.Hacha) modeloActivo = objetoHacha;
         else if (herramientaActual == TipoHerramienta.Pico) modeloActivo = objetoPico;
-        else if (herramientaActual == TipoHerramienta.ArmaFuego) modeloActivo = objetoArma;
-        else if (herramientaActual == TipoHerramienta.CuerpoACuerpo) modeloActivo = objetoCuerpoACuerpo;
+        else if (indiceSlot == 3) modeloActivo = modeloEnSlot3;
+        else if (indiceSlot == 4) modeloActivo = modeloEnSlot4;
         else if (herramientaActual == TipoHerramienta.Ninguno) modeloActivo = null;
 
-        // 3. ¡MAGIA DEL DNI! Leemos los datos del modelo que acabamos de encender
+        // 4. MAGIA DEL DNI
         if (iconoBotonAccion != null)
         {
-            // Ocultamos el botón de acción por completo si tenemos las manos vacías (¡Soluciona tu problema del engranaje flotante!)
-            // Nota: Para que el engranaje desaparezca, asegúrate de que 'iconoBotonAccion' en Unity sea el objeto PADRE que tiene todo el botón.
             iconoBotonAccion.transform.parent.gameObject.SetActive(herramientaActual != TipoHerramienta.Ninguno);
-            
-            Sprite fotoAccion = spriteMano; // Por defecto
+            Sprite fotoAccion = spriteMano; 
             bool requiereBalas = false;
 
             if (modeloActivo != null)
             {
-                // Buscamos cuál de los 4 scripts tiene puesto para robarle su DNI
                 if (modeloActivo.GetComponent<ControladorArmas>() != null) {
                     fotoAccion = modeloActivo.GetComponent<ControladorArmas>().iconoBotonAccion;
                     requiereBalas = modeloActivo.GetComponent<ControladorArmas>().usaBalas;
@@ -171,16 +192,13 @@ public class InteraccionJugador : MonoBehaviour
             }
 
             iconoBotonAccion.sprite = fotoAccion;
-            
-            // ¡El DNI decide si aparece el botón de recargar completo! (Asegúrate de arrastrar el PADRE a botonRecargarObj)
             if (botonRecargarObj != null) botonRecargarObj.SetActive(requiereBalas);
         }
 
-        // 4. Resaltamos visualmente el slot
+        // 5. Resaltamos visualmente el slot
         for (int i = 0; i < slotsCinturon.Length; i++)
         {
             if (slotsCinturon[i] == null) continue; 
-            
             if (i == indiceSlot && indiceSlot != -1)
             {
                 slotsCinturon[i].color = colorSeleccionado;
@@ -341,7 +359,7 @@ public class InteraccionJugador : MonoBehaviour
             if (botonesAUsar[i] != null) botonesAUsar[i].gameObject.SetActive(false);
         }
     }
-    
+
     // Esta es tu lógica original intacta, solo le cambiamos el nombre
     public void TocarBotonCinturonNormal(int indiceBoton)
     {
