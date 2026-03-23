@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
-using TMPro; 
+using TMPro;
+using System.Collections;
 
 public class InteraccionJugador : MonoBehaviour
 {
