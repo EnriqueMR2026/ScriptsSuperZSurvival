@@ -57,12 +57,28 @@ public class ManejadorTutorial : MonoBehaviour
             case 5:
                 textoMision = "NUEVO OBJETIVO: La zona está limpia. Sube a tu habitación en la taberna y ve a dormir.";
                 break;
+            case 6:
+                textoMision = "Gracias por jugar la mini DEMO, ahora todas las armas están desbloqueadas. Ve a la fogata y enciéndela.";
+                break;
         }
 
-        // Le mandamos el texto a tu panel para que haga la animación de entrada
         if (panelObjetivos != null && textoMision != "")
         {
             panelObjetivos.MostrarNuevaMision(textoMision);
+        }
+    }
+
+    // ¡NUEVA FUNCIÓN!
+    public void IniciarDiaDos()
+    {
+        pasoActual = 6;
+        ActualizarMision(pasoActual);
+
+        // Desbloqueamos las armas del jugador
+        InteraccionJugador interaccion = FindFirstObjectByType<InteraccionJugador>();
+        if (interaccion != null)
+        {
+            interaccion.DesbloquearArmasModoLibre();
         }
     }
 }

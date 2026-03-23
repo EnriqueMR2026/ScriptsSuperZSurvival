@@ -30,29 +30,41 @@ public class FogataTutorial : MonoBehaviour
 
     public void Encender()
     {
-        // Solo la podemos encender si estamos en el paso exacto de la fogata (Paso 3)
-        if (tutorial != null && tutorial.pasoActual == 3)
+        if (tutorial != null)
         {
-            // Prendemos el fuego
-            if (fuegoParticulas != null) fuegoParticulas.SetActive(true);
-            
-            // ¡CORRECCIÓN! Usamos .enabled aquí también
-            if (luzFogata != null) luzFogata.enabled = true; 
-
-            // ¡MAGIA DE TERROR! Aplicamos los datos exactos de tu foto para la niebla
-            RenderSettings.fog = true;
-            RenderSettings.fogMode = FogMode.Exponential;
-            RenderSettings.fogColor = Color.red; 
-            RenderSettings.fogDensity = 0.03f;
-
-            // Despertamos a la horda
-            foreach(GameObject z in zombis)
+            // --- FOGATA DÍA 1 ---
+            if (tutorial.pasoActual == 3)
             {
-                if (z != null) z.SetActive(true);
-            }
+                if (fuegoParticulas != null) fuegoParticulas.SetActive(true);
+                if (luzFogata != null) luzFogata.enabled = true; 
 
-            hordaActiva = true;
-            tutorial.AvanzarTutorial(); // Pasa al Paso 4: ¡Sobrevive a la oleada!
+                RenderSettings.fog = true;
+                RenderSettings.fogMode = FogMode.Exponential;
+                RenderSettings.fogColor = Color.red; 
+                RenderSettings.fogDensity = 0.03f;
+
+                foreach(GameObject z in zombis) { if (z != null) z.SetActive(true); }
+
+                hordaActiva = true;
+                tutorial.AvanzarTutorial(); 
+            }
+            // --- FOGATA DÍA 2 (MODO LIBRE) ---
+            else if (tutorial.pasoActual == 6) 
+            {
+                if (fuegoParticulas != null) fuegoParticulas.SetActive(true);
+                if (luzFogata != null) luzFogata.enabled = true; 
+
+                // Reciclamos los zombis escondidos y los revivimos sin cambiar el clima
+                foreach(GameObject z in zombis)
+                {
+                    if (z != null) 
+                    {
+                        z.SetActive(true);
+                        EnemigoZombi scriptZ = z.GetComponent<EnemigoZombi>();
+                        if (scriptZ != null) scriptZ.RevivirZombi();
+                    }
+                }
+            }
         }
     }
 

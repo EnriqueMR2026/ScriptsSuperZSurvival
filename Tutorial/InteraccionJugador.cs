@@ -617,4 +617,38 @@ public class InteraccionJugador : MonoBehaviour
             CambiarHerramienta(4);
         }
     }
+
+    // ¡NUEVA FUNCIÓN! Regalo de Modo Libre
+    public void DesbloquearArmasModoLibre()
+    {
+        tieneHacha = true;
+        tienePico = true;
+        tieneCuchillo = true;
+        tieneArmaFuego = true;
+
+        // Encendemos los botones visuales de todos los slots
+        for (int i = 0; i < slotsCinturon.Length; i++)
+        {
+            if (slotsCinturon[i] != null) slotsCinturon[i].gameObject.SetActive(true);
+        }
+
+        // Le damos el Hacha al Slot 2 (En Unity es el índice 1)
+        CambiarHerramienta(1); 
+        
+        // ¡Magia! Le ponemos la AK47 en la memoria principal (Slot 3)
+        if (listaArmasPrincipales.Length > 0 && listaArmasPrincipales[0] != null)
+        {
+            modeloEnSlot3 = listaArmasPrincipales[0];
+            armaEnSlotPrincipal = TipoHerramienta.ArmaFuego;
+            
+            ControladorArmas scriptAK = modeloEnSlot3.GetComponent<ControladorArmas>();
+            if (scriptAK != null && slotsCinturon.Length > 3 && slotsCinturon[3] != null)
+            {
+                slotsCinturon[3].sprite = scriptAK.iconoCinturon;
+            }
+        }
+
+        // Forzamos a que saque la AK47
+        CambiarHerramienta(3);
+    }
 }

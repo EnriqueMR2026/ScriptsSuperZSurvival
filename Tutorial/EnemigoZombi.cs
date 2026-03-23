@@ -80,24 +80,49 @@ public class EnemigoZombi : MonoBehaviour
 
     public void RecibirDano(int cantidad)
     {
-        // Si ya está muerto, ignoramos el daño extra para no repetir la animación
         if (estaMuerto) return;
 
         vidaActual -= cantidad;
 
-        // Verificamos si la vida se acabó
         if (vidaActual <= 0)
         {
             estaMuerto = true;
-            
-            // Apagamos su motor para que deje de perseguirte
             agente.enabled = false;
-            
-            // Le mandamos la señal matemática para que caiga al piso
             anim.SetTrigger("Morir");
             
-            // Hacemos que el cuerpo desaparezca después de 5 segundos para no llenar la aldea de cadáveres
-            Destroy(gameObject, 5f);
+            // ¡MAGIA DEL MODO INFINITO!
+            ManejadorTutorial tutorial = FindFirstObjectByType<ManejadorTutorial>();
+            if (tutorial != null && tutorial.pasoActual >= 6)
+            {
+                StartCoroutine(RutinaRevivir()); // Revive a los 5 segundos
+            }
+            else
+            {
+                StartCoroutine(EsconderCuerpo()); // En el Día 1, solo se esconde, no se destruye
+            }
         }
+    }
+
+    private System.Collections.IEnumerator EsconderCuerpo()
+    {
+        yield return new WaitForSeconds(5f);
+        gameObject.SetActive(false); // Lo guardamos para usarlo en el Día 2
+    }
+
+    private System.Collections.IEnumerator RutinaRevivir()
+    {
+        yield return new WaitForSeconds(5f); 
+        RevivirZombi();
+        // Lo movemos un poquito para que no salga exactamente encima de ti
+        transform.position += new Vector3(Random.Range(-2f, 2f), 0, Random.Range(-2f, 2f));
+    }
+
+    public void RevivirZombi()
+    {
+        vidaActual = vidaMaxima;
+        estaMuerto = false;
+        anim.Rebind(); // Resetea la animación
+        anim.Update(0f);
+        agente.enabled = true;
     }
 }
