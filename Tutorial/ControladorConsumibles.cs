@@ -11,6 +11,11 @@ public class ControladorConsumibles : MonoBehaviour
     public float recuperacionHambre = 20f;
     public float recuperacionSalud = 10f;
 
+    [Header("Identificación Visual (El DNI)")]
+    public Sprite iconoCinturon;      // Arrastra aquí la foto de tu Manzana/Plátano
+    public Sprite iconoBotonAccion;   // Arrastra aquí la foto para el botón (ej. una boca comiendo)
+    public bool usaBalas = false;     // ¡APAGADO! No recargamos manzanas jajaja
+
     [Header("Posicionamiento Individual")]
     public Vector3 posEspera;         
     public Vector3 rotEspera;         

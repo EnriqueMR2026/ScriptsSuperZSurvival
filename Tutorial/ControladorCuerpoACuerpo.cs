@@ -8,6 +8,11 @@ public class ControladorCuerpoACuerpo : MonoBehaviour
     public int dano = 50; // ¡El cuchillo hace mucho daño de cerca!
     public float distanciaAtaque = 2.5f; // Alcance del brazo
 
+    [Header("Identificación Visual (El DNI)")]
+    public Sprite iconoCinturon;      // Arrastra aquí la foto de tu Cuchillo/Hacha/Pico
+    public Sprite iconoBotonAccion;   // Arrastra aquí la foto para el botón (ej. un tajo o el mismo cuchillo)
+    public bool usaBalas = false;     // ¡APAGADO! Para que el cinturón esconda el botón de recargar
+
     [Header("Posicionamiento Individual")]
     public Vector3 posEspera;         
     public Vector3 rotEspera;         
