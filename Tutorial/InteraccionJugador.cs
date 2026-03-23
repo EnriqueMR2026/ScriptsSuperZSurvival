@@ -320,14 +320,10 @@ public class InteraccionJugador : MonoBehaviour
         {
             if (listaAUsar[i] != null)
             {
-                // 1. Verificamos si esta arma es la que ya tienes equipada
+                // 1. ¡CORRECCIÓN! Comparamos con la memoria limpia y nueva
                 bool esArmaEquipada = false;
-                if (indiceSlot == 3 && listaAUsar[i] == objetoArma && armaEnSlotPrincipal == TipoHerramienta.ArmaFuego) esArmaEquipada = true;
-                if (indiceSlot == 4)
-                {
-                    if (armaEnSlotSecundario == TipoHerramienta.ArmaFuego && listaAUsar[i] == objetoArma) esArmaEquipada = true;
-                    if (armaEnSlotSecundario == TipoHerramienta.CuerpoACuerpo && listaAUsar[i] == objetoCuerpoACuerpo) esArmaEquipada = true;
-                }
+                if (indiceSlot == 3 && listaAUsar[i] == modeloEnSlot3) esArmaEquipada = true;
+                if (indiceSlot == 4 && listaAUsar[i] == modeloEnSlot4) esArmaEquipada = true;
 
                 // 2. Si NO la traes puesta, la ponemos en la persiana
                 if (!esArmaEquipada && botonActual < botonesAUsar.Length)
@@ -355,7 +351,7 @@ public class InteraccionJugador : MonoBehaviour
             }
         }
 
-        // 3. Escondemos los botones que sobren en blanco (si solo tenías 2 armas y equipaste 1, sobra 1 botón)
+        // 3. Escondemos los botones que sobren en blanco (¡Adiós a los cuadros blancos vacíos!)
         for (int i = botonActual; i < botonesAUsar.Length; i++)
         {
             if (botonesAUsar[i] != null) botonesAUsar[i].gameObject.SetActive(false);
