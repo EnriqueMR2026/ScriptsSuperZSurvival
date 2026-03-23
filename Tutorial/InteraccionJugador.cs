@@ -35,9 +35,13 @@ public class InteraccionJugador : MonoBehaviour
     public Color colorNormal = Color.white;
     public float escalaSeleccionado = 1.2f;
 
-    [Header("Persiana Desplegable (NUEVO)")]
-    public GameObject panelPersiana; 
-    public Image[] botonesPersiana; 
+    [Header("Persianas Desplegables (CORREGIDO)")]
+    public GameObject panelPersianaPrincipal; // Arriba del Slot 3
+    public Image[] botonesPersianaPrincipal; 
+    
+    public GameObject panelPersianaSecundaria; // Arriba del Slot 4
+    public Image[] botonesPersianaSecundaria; 
+    
     public float tiempoParaDesplegar = 0.4f;
     private int slotMantenido = -1;
     private float tiempoPresionando = 0f;
@@ -262,28 +266,34 @@ public class InteraccionJugador : MonoBehaviour
 
     private void AbrirPersiana(int indiceSlot)
     {
-        if (panelPersiana != null) panelPersiana.SetActive(true);
+        // 1. Elegimos qué panel y qué lista de tu mochila vamos a usar
+        GameObject panelAUsar = (indiceSlot == 3) ? panelPersianaPrincipal : panelPersianaSecundaria;
+        Image[] botonesAUsar = (indiceSlot == 3) ? botonesPersianaPrincipal : botonesPersianaSecundaria;
+        GameObject[] listaAUsar = (indiceSlot == 3) ? listaArmasPrincipales : listaArmasSecundarias;
+
+        // 2. Apagamos ambos por precaución, y encendemos solo el que pediste
+        if (panelPersianaPrincipal != null) panelPersianaPrincipal.SetActive(false);
+        if (panelPersianaSecundaria != null) panelPersianaSecundaria.SetActive(false);
         
-        // Elegimos qué lista de armas revisar en tu mochila
-        GameObject[] listaUsar = (indiceSlot == 3) ? listaArmasPrincipales : listaArmasSecundarias;
+        if (panelAUsar != null) panelAUsar.SetActive(true);
         
-        for (int i = 0; i < botonesPersiana.Length; i++)
+        // 3. ¡LA MAGIA DEL DNI! Llenamos los botoncitos de ese panel
+        for (int i = 0; i < botonesAUsar.Length; i++)
         {
-            if (i < listaUsar.Length && listaUsar[i] != null)
+            if (i < listaAUsar.Length && listaAUsar[i] != null)
             {
-                botonesPersiana[i].gameObject.SetActive(true);
+                botonesAUsar[i].gameObject.SetActive(true);
                 
-                // ¡LA MAGIA DEL DNI! Le pedimos su foto al arma para dibujarla en la persiana
-                ControladorArmas armaFuego = listaUsar[i].GetComponent<ControladorArmas>();
-                if (armaFuego != null) botonesPersiana[i].sprite = armaFuego.iconoCinturon;
+                ControladorArmas armaFuego = listaAUsar[i].GetComponent<ControladorArmas>();
+                if (armaFuego != null) botonesAUsar[i].sprite = armaFuego.iconoCinturon;
                 
-                ControladorCuerpoACuerpo armaMelee = listaUsar[i].GetComponent<ControladorCuerpoACuerpo>();
-                if (armaMelee != null) botonesPersiana[i].sprite = armaMelee.iconoCinturon;
+                ControladorCuerpoACuerpo armaMelee = listaAUsar[i].GetComponent<ControladorCuerpoACuerpo>();
+                if (armaMelee != null) botonesAUsar[i].sprite = armaMelee.iconoCinturon;
             }
             else
             {
                 // Escondemos los botoncitos que sobren para que se vea limpio
-                if (botonesPersiana[i] != null) botonesPersiana[i].gameObject.SetActive(false); 
+                if (botonesAUsar[i] != null) botonesAUsar[i].gameObject.SetActive(false); 
             }
         }
     }
