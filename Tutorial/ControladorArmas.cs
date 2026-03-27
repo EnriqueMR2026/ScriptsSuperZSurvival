@@ -172,4 +172,18 @@ public class ControladorArmas : MonoBehaviour
             textoMunicion.color = (municionActual <= 0) ? Color.red : Color.white;
         }
     }
+
+    // ¡NUEVA FUNCIÓN VISUALIZADORA! Solo se ve en el Editor de Unity
+    private void OnDrawGizmos()
+    {
+        if (posDisparo != null)
+        {
+            // Dibujamos una esfera roja brillante exactamente donde nacen las balas
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(posDisparo.position, 0.03f);
+            
+            // Dibujamos una línea roja que te muestra hacia dónde van a salir disparadas
+            Gizmos.DrawRay(posDisparo.position, posDisparo.forward * 2f);
+        }
+    }
 }
