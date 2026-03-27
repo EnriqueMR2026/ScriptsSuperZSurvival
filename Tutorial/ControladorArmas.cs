@@ -176,14 +176,15 @@ public class ControladorArmas : MonoBehaviour
     // ¡NUEVA FUNCIÓN VISUALIZADORA! Solo se ve en el Editor de Unity
     private void OnDrawGizmos()
     {
-        if (posDisparo != null)
+        // ¡CORRECCIÓN! Usamos el puntoDisparo (la punta del cañón) en lugar del posDisparo
+        if (puntoDisparo != null)
         {
             // Dibujamos una esfera roja brillante exactamente donde nacen las balas
             Gizmos.color = Color.red;
-            Gizmos.DrawSphere(posDisparo.position, 0.03f);
+            Gizmos.DrawSphere(puntoDisparo.position, 0.03f);
             
             // Dibujamos una línea roja que te muestra hacia dónde van a salir disparadas
-            Gizmos.DrawRay(posDisparo.position, posDisparo.forward * 2f);
+            Gizmos.DrawRay(puntoDisparo.position, puntoDisparo.forward * 2f);
         }
     }
 }
