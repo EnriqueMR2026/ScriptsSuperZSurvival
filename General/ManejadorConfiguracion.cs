@@ -1,8 +1,22 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class ManejadorConfiguracion : MonoBehaviour
 {
+    [Header("UI Visual (Textos y Sliders)")]
+    public TMP_Text txtVolMaestro;
+    public Slider sliderVolMaestro;
+    
+    public TMP_Text txtVolMusica;
+    public Slider sliderVolMusica;
+    
+    public TMP_Text txtVolEfectos;
+    public Slider sliderVolEfectos;
+
+    public TMP_Text txtBrillo;
+    public Slider sliderBrillo;
+
     [Header("🎧 Audio y Sonido")]
     public float volumenMaestro;
     public float volumenMusica;
@@ -33,25 +47,27 @@ public class ManejadorConfiguracion : MonoBehaviour
 
     public void CargarOpcionesGuardadas()
     {
-        // Si es la primera vez que juegan, Unity pondrá estos valores por defecto
-        volumenMaestro = PlayerPrefs.GetFloat("VolumenMaestro", 1f); // 1f = 100%
+        volumenMaestro = PlayerPrefs.GetFloat("VolumenMaestro", 1f); 
         volumenMusica = PlayerPrefs.GetFloat("VolumenMusica", 1f);
         volumenEfectos = PlayerPrefs.GetFloat("VolumenEfectos", 1f);
-
         nivelBrillo = PlayerPrefs.GetFloat("NivelBrillo", 1f);
         
-        sensibilidadCamara = PlayerPrefs.GetFloat("Sensibilidad", 0.5f); // 0.5f = Mitad
+        sensibilidadCamara = PlayerPrefs.GetFloat("Sensibilidad", 0.5f); 
         tamanoBotones = PlayerPrefs.GetFloat("TamanoBotones", 1f);
         opacidadUI = PlayerPrefs.GetFloat("OpacidadUI", 1f);
         
-        vibracionActivada = PlayerPrefs.GetInt("Vibracion", 1); // 1 = Activado por defecto
-        joystickDinamico = PlayerPrefs.GetInt("JoystickDinamico", 0); // 0 = Fijo por defecto
+        vibracionActivada = PlayerPrefs.GetInt("Vibracion", 1); 
+        joystickDinamico = PlayerPrefs.GetInt("JoystickDinamico", 0); 
         modoZurdo = PlayerPrefs.GetInt("ModoZurdo", 0);
-
         hitmarkersActivados = PlayerPrefs.GetInt("Hitmarkers", 1);
         marcadorCombosActivado = PlayerPrefs.GetInt("MarcadorCombos", 1);
 
-        // Aquí luego le diremos al juego que aplique estos valores visualmente
+        // ¡MAGIA PURA! Movemos las barritas físicas para que coincidan con la memoria guardada
+        if (sliderVolMaestro != null) sliderVolMaestro.value = volumenMaestro;
+        if (sliderVolMusica != null) sliderVolMusica.value = volumenMusica;
+        if (sliderVolEfectos != null) sliderVolEfectos.value = volumenEfectos;
+        if (sliderBrillo != null) sliderBrillo.value = nivelBrillo;
+
         Debug.Log("¡Configuración del jugador cargada con éxito de la memoria del celular!");
     }
 
@@ -61,8 +77,11 @@ public class ManejadorConfiguracion : MonoBehaviour
     {
         volumenMaestro = valor;
         PlayerPrefs.SetFloat("VolumenMaestro", valor);
-        AudioListener.volume = valor; // ¡Magia! Esto le baja el volumen a todo Unity al instante
-        PlayerPrefs.Save(); // Forzamos el guardado en el disco del celular
+        AudioListener.volume = valor; 
+        PlayerPrefs.Save(); 
+
+        // ¡LA MAGIA DEL NUMERITO! Multiplicamos por 100 y le pegamos el símbolo de porcentaje
+        if (txtVolMaestro != null) txtVolMaestro.text = Mathf.RoundToInt(valor * 100f).ToString() + "%";
     }
 
     public void GuardarVolumenMusica(float valor)
