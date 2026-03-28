@@ -23,9 +23,12 @@ public class EnemigoZombi : MonoBehaviour
 
     void Start()
     {
+        // Conectamos el motor de movimiento y el de animaciones
         agente = GetComponent<UnityEngine.AI.NavMeshAgent>();
         anim = GetComponent<Animator>();
-        jugador = GameObject.FindGameObjectWithTag("Player").transform;
+
+        // Inicializamos la vida del zombi al máximo
+        vidaActual = vidaMaxima;
         
         // ¡NUEVO! Guardamos exactamente dónde lo pusiste en el mapa
         posicionInicial = transform.position; 
