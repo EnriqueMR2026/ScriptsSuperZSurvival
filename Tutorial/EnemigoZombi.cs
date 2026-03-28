@@ -113,9 +113,12 @@ public class EnemigoZombi : MonoBehaviour
     private System.Collections.IEnumerator RutinaRevivir()
     {
         yield return new WaitForSeconds(5f); 
+        
+        // ¡MAGIA! Lo teletransportamos a su casa antes de revivirlo
+        agente.enabled = false; // Apagamos el agente un milisegundo para que no pelee con el teletransporte
+        transform.position = posicionInicial; 
+        
         RevivirZombi();
-        // Lo movemos un poquito para que no salga exactamente encima de ti
-        transform.position += new Vector3(Random.Range(-2f, 2f), 0, Random.Range(-2f, 2f));
     }
 
     public void RevivirZombi()
