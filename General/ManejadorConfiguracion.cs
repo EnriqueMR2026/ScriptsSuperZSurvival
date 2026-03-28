@@ -17,12 +17,14 @@ public class ManejadorConfiguracion : MonoBehaviour
     public TMP_Text txtBrillo;
     public Slider sliderBrillo;
 
-    // ¡AQUÍ ESTÁ LA QUE FALTABA!
     public TMP_Text txtSensibilidad;
     public Slider sliderSensibilidad;
 
     public TMP_Text txtTamanoBotones;
     public Slider sliderTamanoBotones;
+
+    public TMP_Text txtOpacidadUI;
+    public Slider sliderOpacidadUI;
 
     [Header("🎧 Audio y Sonido")]
     public float volumenMaestro;
