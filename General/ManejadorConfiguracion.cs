@@ -172,6 +172,8 @@ public class ManejadorConfiguracion : MonoBehaviour
         opacidadUI = valor;
         PlayerPrefs.SetFloat("OpacidadUI", valor);
         PlayerPrefs.Save();
+
+        if (txtOpacidadUI != null) txtOpacidadUI.text = Mathf.RoundToInt(valor * 100f).ToString() + "%";
     }
 
     public void AlternarJoystickDinamico(bool activado)
