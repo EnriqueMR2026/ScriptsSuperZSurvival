@@ -8,6 +8,7 @@ public class ManejadorPerfil : MonoBehaviour
     [Header("Gestión de Paneles")]
     public GameObject panelPrincipal;
     public GameObject panelSeleccionModo;
+    public GameObject panelConfiguracion;
     
     [Header("UI Registro")]
     public TMP_InputField inputNombre;
@@ -18,10 +19,9 @@ public class ManejadorPerfil : MonoBehaviour
     [Header("UI Menu Principal")]
     public TMP_Text textoNombreMenu;
 
-    // --- ¡LO NUEVO PARA TU PANEL DE CONFIGURACIÓN! ---
     [Header("UI Panel Perfil (Configuración)")]
     public TMP_Text textoNombreConfig;
-    public GameObject[] fotosConfig; // Las mismas 5 fotos, pero las que pondremos en el menú
+    public GameObject[] fotosConfig; 
 
     [Header("Efectos de Transición")]
     public CanvasGroup cortinaNegra; // Arrastra aquí tu CortinaNegra
@@ -252,6 +252,49 @@ public class ManejadorPerfil : MonoBehaviour
         }
 
         // 4. Subimos el telón
+        while (cortinaNegra.alpha > 0f)
+        {
+            cortinaNegra.alpha -= Time.deltaTime * velocidadTransicion;
+            yield return null;
+        }
+        cortinaNegra.blocksRaycasts = false;
+    }
+
+    // --- ¡NUEVAS FUNCIONES PARA ENTRAR Y SALIR DE LA CONFIGURACIÓN! ---
+    
+    public void AbrirConfiguracion()
+    {
+        StartCoroutine(RutinaTransicionConfiguracion(true));
+    }
+
+    public void CerrarConfiguracion()
+    {
+        StartCoroutine(RutinaTransicionConfiguracion(false));
+    }
+
+    IEnumerator RutinaTransicionConfiguracion(bool abriendo)
+    {
+        // 1. Bajamos el telón oscuro
+        cortinaNegra.blocksRaycasts = true;
+        while (cortinaNegra.alpha < 1f)
+        {
+            cortinaNegra.alpha += Time.deltaTime * velocidadTransicion;
+            yield return null;
+        }
+
+        // 2. Hacemos el cambio de paneles según si entramos o salimos
+        if (abriendo)
+        {
+            panelPrincipal.SetActive(false);
+            panelConfiguracion.SetActive(true);
+        }
+        else
+        {
+            panelConfiguracion.SetActive(false);
+            panelPrincipal.SetActive(true);
+        }
+
+        // 3. Subimos el telón
         while (cortinaNegra.alpha > 0f)
         {
             cortinaNegra.alpha -= Time.deltaTime * velocidadTransicion;
