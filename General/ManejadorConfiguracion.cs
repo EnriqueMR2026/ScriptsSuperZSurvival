@@ -17,6 +17,9 @@ public class ManejadorConfiguracion : MonoBehaviour
     public TMP_Text txtBrillo;
     public Slider sliderBrillo;
 
+    public TMP_Text txtTamanoBotones;
+    public Slider sliderTamanoBotones;
+
     [Header("🎧 Audio y Sonido")]
     public float volumenMaestro;
     public float volumenMusica;
@@ -117,6 +120,8 @@ public class ManejadorConfiguracion : MonoBehaviour
         tamanoBotones = valor;
         PlayerPrefs.SetFloat("TamanoBotones", valor);
         PlayerPrefs.Save();
+
+        if (txtTamanoBotones != null) txtTamanoBotones.text = Mathf.RoundToInt(valor * 100f).ToString() + "%";
     }
 
     public void AlternarHitmarkers(bool activado)
