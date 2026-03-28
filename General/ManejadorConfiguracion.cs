@@ -77,7 +77,7 @@ public class ManejadorConfiguracion : MonoBehaviour
         if (sliderVolEfectos != null) sliderVolEfectos.value = volumenEfectos;
         if (sliderBrillo != null) sliderBrillo.value = nivelBrillo;
 
-        Debug.Log("¡Configuración del jugador cargada con éxito de la memoria del celular!");
+        //Debug.Log("¡Configuración del jugador cargada con éxito de la memoria del celular!");
     }
 
     // --- FUNCIONES PARA QUE EL CANVAS (LA INTERFAZ) GUARDE LOS CAMBIOS ---
