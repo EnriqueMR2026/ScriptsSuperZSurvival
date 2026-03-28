@@ -108,6 +108,8 @@ public class ManejadorConfiguracion : MonoBehaviour
         sensibilidadCamara = valor;
         PlayerPrefs.SetFloat("Sensibilidad", valor);
         PlayerPrefs.Save();
+
+        if (txtSensibilidad != null) txtSensibilidad.text = Mathf.RoundToInt(valor * 100f).ToString() + "%";
     }
 
     public void GuardarTamanoBotones(float valor)
