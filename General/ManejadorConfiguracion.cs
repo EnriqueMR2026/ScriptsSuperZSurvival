@@ -89,6 +89,9 @@ public class ManejadorConfiguracion : MonoBehaviour
         volumenMusica = valor;
         PlayerPrefs.SetFloat("VolumenMusica", valor);
         PlayerPrefs.Save();
+
+        // ¡LA MAGIA DEL NUMERITO!
+        if (txtVolMusica != null) txtVolMusica.text = Mathf.RoundToInt(valor * 100f).ToString() + "%";
     }
 
     public void GuardarVolumenEfectos(float valor)
@@ -96,6 +99,8 @@ public class ManejadorConfiguracion : MonoBehaviour
         volumenEfectos = valor;
         PlayerPrefs.SetFloat("VolumenEfectos", valor);
         PlayerPrefs.Save();
+
+        if (txtVolEfectos != null) txtVolEfectos.text = Mathf.RoundToInt(valor * 100f).ToString() + "%";
     }
 
     public void GuardarSensibilidad(float valor)
@@ -138,6 +143,8 @@ public class ManejadorConfiguracion : MonoBehaviour
         Screen.brightness = valor; 
         
         PlayerPrefs.Save();
+
+        if (txtBrillo != null) txtBrillo.text = Mathf.RoundToInt(valor * 100f).ToString() + "%";
     }
 
     public void AlternarVibracion(bool activado)
