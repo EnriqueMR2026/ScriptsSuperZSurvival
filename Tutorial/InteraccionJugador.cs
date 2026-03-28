@@ -44,7 +44,6 @@ public class InteraccionJugador : MonoBehaviour
     
     public float tiempoParaDesplegar = 0.4f;
     private int slotMantenido = -1;
-    private float tiempoPresionando = 0f;
     private bool persianaAbierta = false;
 
     [Header("Botones Extras UI")]
