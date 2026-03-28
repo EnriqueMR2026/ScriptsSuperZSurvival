@@ -18,6 +18,11 @@ public class ManejadorPerfil : MonoBehaviour
     [Header("UI Menu Principal")]
     public TMP_Text textoNombreMenu;
 
+    // --- ¡LO NUEVO PARA TU PANEL DE CONFIGURACIÓN! ---
+    [Header("UI Panel Perfil (Configuración)")]
+    public TMP_Text textoNombreConfig;
+    public GameObject[] fotosConfig; // Las mismas 5 fotos, pero las que pondremos en el menú
+
     [Header("Efectos de Transición")]
     public CanvasGroup cortinaNegra; // Arrastra aquí tu CortinaNegra
     public float velocidadTransicion = 3f; // Qué tan rápido se oscurece
@@ -42,17 +47,31 @@ public class ManejadorPerfil : MonoBehaviour
         StartCoroutine(RutinaTransicionVolver());
     }
 
-    // Función auxiliar para mostrar el nombre en el menú principal
+    // Función auxiliar para mostrar el nombre en el menú principal Y en la configuración
     void ActualizarTextoMenu()
     {
         if (PlayerPrefs.HasKey("NombreJugador"))
         {
             string nombre = PlayerPrefs.GetString("NombreJugador");
             textoNombreMenu.text = "Soldado: " + nombre;
+
+            // ¡NUEVO! Actualizamos el texto en tu panel de Perfil
+            if (textoNombreConfig != null) textoNombreConfig.text = nombre;
+
+            // ¡NUEVO! Encendemos solo la foto que el jugador eligió
+            if (fotosConfig != null && fotosConfig.Length > 0)
+            {
+                int iconoGuardado = PlayerPrefs.GetInt("IconoJugador", 0);
+                for (int i = 0; i < fotosConfig.Length; i++)
+                {
+                    if (fotosConfig[i] != null) fotosConfig[i].SetActive(i == iconoGuardado);
+                }
+            }
         }
         else
         {
             textoNombreMenu.text = "";
+            if (textoNombreConfig != null) textoNombreConfig.text = "Sin perfil";
         }
     }
     
@@ -191,6 +210,48 @@ public class ManejadorPerfil : MonoBehaviour
         panelPrincipal.SetActive(true);
 
         // 3. Volver a iluminar la pantalla
+        while (cortinaNegra.alpha > 0f)
+        {
+            cortinaNegra.alpha -= Time.deltaTime * velocidadTransicion;
+            yield return null;
+        }
+        cortinaNegra.blocksRaycasts = false;
+    }
+
+    // ¡NUEVA FUNCIÓN! Para el botón "Editar Perfil" en la configuración
+    public void EditarPerfil()
+    {
+        StartCoroutine(RutinaEditarPerfil());
+    }
+
+    IEnumerator RutinaEditarPerfil()
+    {
+        // 1. Bajamos el telón oscuro
+        cortinaNegra.blocksRaycasts = true;
+        while (cortinaNegra.alpha < 1f)
+        {
+            cortinaNegra.alpha += Time.deltaTime * velocidadTransicion;
+            yield return null;
+        }
+
+        // 2. Encendemos el PopUp mágico
+        panelPopUp.SetActive(true);
+
+        // 3. Precargamos los datos que ya tenía para que no tenga que escribir todo de nuevo
+        if (PlayerPrefs.HasKey("NombreJugador"))
+        {
+            inputNombre.text = PlayerPrefs.GetString("NombreJugador");
+            iconoSeleccionado = PlayerPrefs.GetInt("IconoJugador");
+
+            // Encendemos la foto correcta en el carrusel del PopUp
+            for (int i = 0; i < fotosPerfil.Length; i++)
+            {
+                if (fotosPerfil[i] != null) fotosPerfil[i].SetActive(i == iconoSeleccionado);
+            }
+            ValidarRegistro(); // Para encender el botón de aceptar
+        }
+
+        // 4. Subimos el telón
         while (cortinaNegra.alpha > 0f)
         {
             cortinaNegra.alpha -= Time.deltaTime * velocidadTransicion;
