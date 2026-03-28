@@ -19,15 +19,16 @@ public class EnemigoZombi : MonoBehaviour
     public int vidaMaxima = 100;
     private int vidaActual;
     public bool estaMuerto = false;
+    private Vector3 posicionInicial; // Memoria de su punto de spawn
 
     void Start()
     {
-        // Conectamos el motor de movimiento y el de animaciones
-        agente = GetComponent<NavMeshAgent>();
+        agente = GetComponent<UnityEngine.AI.NavMeshAgent>();
         anim = GetComponent<Animator>();
-
-        // Inicializamos la vida del zombi al máximo
-        vidaActual = vidaMaxima;
+        jugador = GameObject.FindGameObjectWithTag("Player").transform;
+        
+        // ¡NUEVO! Guardamos exactamente dónde lo pusiste en el mapa
+        posicionInicial = transform.position; 
     }
 
     void Update()
