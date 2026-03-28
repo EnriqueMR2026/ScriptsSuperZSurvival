@@ -58,6 +58,13 @@ public class ControladorCuerpoACuerpo : MonoBehaviour
             if (zombi != null)
             {
                 zombi.RecibirDano(dano); 
+                
+                // --- ¡NUEVO! AVISAMOS AL HUD DEL IMPACTO ---
+                EfectosHUD efectos = FindFirstObjectByType<EfectosHUD>();
+                if (efectos != null)
+                {
+                    efectos.RegistrarImpacto();
+                }
             }
         }
     }
