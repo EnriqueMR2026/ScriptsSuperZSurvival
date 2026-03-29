@@ -102,6 +102,15 @@ public class ControladorArmas : MonoBehaviour
         if (prefabBala != null && puntoDisparo != null)
         {
             GameObject bala = Instantiate(prefabBala, puntoDisparo.position, puntoDisparo.rotation);
+            
+            // --- ¡MAGIA PURA! Hacemos que la bala ignore el cuerpo del jugador ---
+            Collider colliderJugador = GetComponentInParent<Collider>();
+            Collider colliderBala = bala.GetComponent<Collider>();
+            if (colliderJugador != null && colliderBala != null)
+            {
+                Physics.IgnoreCollision(colliderBala, colliderJugador);
+            }
+
             Rigidbody rbBala = bala.GetComponent<Rigidbody>();
             if (rbBala != null)
             {
