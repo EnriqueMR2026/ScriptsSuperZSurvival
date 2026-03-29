@@ -51,10 +51,9 @@ public class MovimientoJugador : MonoBehaviour
         // 3. LECTURA DE VISTA (Pantalla táctil o Mouse PC)
         Vector2 inputVista = Vector2.zero;
 
-        // ¡NUEVO! Lógica para PC (Ratón oculto y bloqueado, FPS Clásico)
+        // Lógica para PC (Ratón oculto y bloqueado, FPS Clásico)
         if (Mouse.current != null && Cursor.lockState == CursorLockMode.Locked)
         {
-            // Multiplicamos por 0.1f para que no gire rapidísimo en la compu
             inputVista = Mouse.current.delta.ReadValue() * 0.1f; 
         }
         // Lógica para Celular (Tocar y arrastrar lado derecho)
@@ -72,55 +71,74 @@ public class MovimientoJugador : MonoBehaviour
 
         transform.Rotate(Vector3.up * inputVista.x * sensibilidadVista * Time.deltaTime);
 
-        // 4. ATAJOS DE TECLADO PARA PRUEBAS (Espacio, E, Q, R)
+        // 4. ATAJOS DE TECLADO PARA PRUEBAS
+        InteraccionJugador interaccion = GetComponent<InteraccionJugador>();
+
         if (Keyboard.current != null)
         {
-            // Sacamos el script de InteraccionJugador
-            InteraccionJugador interaccion = GetComponent<InteraccionJugador>();
+            // BOTÓN ACCIÓN (Espacio)
+            if (Keyboard.current.spaceKey.wasPressedThisFrame && interaccion != null) interaccion.PresionarBotonAccion();
+            if (Keyboard.current.spaceKey.wasReleasedThisFrame && interaccion != null) interaccion.SoltarBotonAccion();
 
-            // BOTÓN ACCIÓN (Espacio) - Simula dejar el dedo en la pantalla y soltarlo
-            if (Keyboard.current.spaceKey.wasPressedThisFrame && interaccion != null)
-            {
-                interaccion.PresionarBotonAccion();
-            }
-            if (Keyboard.current.spaceKey.wasReleasedThisFrame && interaccion != null)
-            {
-                interaccion.SoltarBotonAccion();
-            }
+            // BOTÓN INTERACTUAR (E)
+            if (Keyboard.current.eKey.wasPressedThisFrame && interaccion != null) interaccion.PresionarBotonInteractuar();
 
-            // BOTÓN INTERACTUAR (E) - La manita
-            if (Keyboard.current.eKey.wasPressedThisFrame && interaccion != null)
-            {
-                interaccion.PresionarBotonInteractuar();
-            }
-
-            // BOTÓN MISIONES (Q) - Abrir/Cerrar librito
+            // BOTÓN MISIONES (Q)
             if (Keyboard.current.qKey.wasPressedThisFrame)
             {
                 PanelObjetivos panel = FindFirstObjectByType<PanelObjetivos>();
                 if (panel != null)
                 {
-                    // Si el panel grande está encendido, lo cerramos
-                    if (panel.panelPrincipal.gameObject.activeSelf)
-                    {
-                        panel.BotonCerrarPresionado();
-                    }
-                    else
-                    {
-                        panel.BotonLibritoPresionado();
-                    }
+                    if (panel.panelPrincipal.gameObject.activeSelf) panel.BotonCerrarPresionado();
+                    else panel.BotonLibritoPresionado();
                 }
             }
 
-            // ¡NUEVO! BOTÓN RECARGAR (R)
+            // BOTÓN RECARGAR (R)
             if (Keyboard.current.rKey.wasPressedThisFrame)
             {
-                // Buscamos si el jugador tiene un arma en las manos y la recargamos
                 ControladorArmas armaActiva = GetComponentInChildren<ControladorArmas>();
-                if (armaActiva != null)
-                {
-                    armaActiva.IniciarRecarga();
-                }
+                if (armaActiva != null) armaActiva.IniciarRecarga();
+            }
+
+            // ¡NUEVO! BOTÓN PERSIANA (Shift)
+            if (Keyboard.current.leftShiftKey.wasPressedThisFrame && interaccion != null)
+            {
+                // Le mandamos el aviso seguro para alternar las opciones del cinturón
+                interaccion.SendMessage("AlternarOpcionesPersiana", SendMessageOptions.DontRequireReceiver);
+            }
+        }
+
+        // ¡NUEVO! CONTROLES DEL RATÓN (Clic Izquierdo y Rueda)
+        if (Mouse.current != null && Cursor.lockState == CursorLockMode.Locked && interaccion != null)
+        {
+            // CLIC IZQUIERDO (Atacar / Disparar y ocultar persiana)
+            if (Mouse.current.leftButton.wasPressedThisFrame)
+            {
+                interaccion.PresionarBotonAccion();
+                // Ocultamos la persiana al realizar una acción
+                interaccion.SendMessage("OcultarPersiana", SendMessageOptions.DontRequireReceiver);
+            }
+            if (Mouse.current.leftButton.wasReleasedThisFrame)
+            {
+                interaccion.SoltarBotonAccion();
+            }
+
+            // RUEDA DEL RATÓN (Cambiar Slot del Cinturón)
+            float scroll = Mouse.current.scroll.y.ReadValue();
+            if (scroll != 0)
+            {
+                int nuevoSlot = interaccion.slotActual;
+                
+                // Si la rueda va hacia arriba, restamos un índice; si va hacia abajo, lo sumamos
+                if (scroll > 0) nuevoSlot--; 
+                if (scroll < 0) nuevoSlot++; 
+
+                // Matemáticas para que el cinturón dé la vuelta infinita (0 a 4)
+                if (nuevoSlot > 4) nuevoSlot = 0;
+                if (nuevoSlot < 0) nuevoSlot = 4;
+
+                interaccion.CambiarHerramienta(nuevoSlot);
             }
         }
     }
