@@ -20,7 +20,19 @@ public class ManejadorPausa : MonoBehaviour
         Time.timeScale = 0f;
         panelPausa.SetActive(true);
 
-        // ¡NUEVO! Apagamos los controles táctiles para que no haya accidentes
+        // Actualizamos el texto de estadísticas justo al pausar
+        if (textoEstadisticas != null)
+        {
+            float tiempoJugado = Time.timeSinceLevelLoad;
+            int minutos = Mathf.FloorToInt(tiempoJugado / 60);
+            int segundos = Mathf.FloorToInt(tiempoJugado % 60);
+            
+            textoEstadisticas.text = "TIEMPO DE SUPERVIVENCIA: " + minutos.ToString("00") + ":" + segundos.ToString("00") + "\n" +
+                                     "ZOMBIS ELIMINADOS: 0\n" +
+                                     "DAÑO CAUSADO: 0";
+        }
+
+        // Apagamos los controles táctiles para que no haya accidentes
         if (canvasControlesMoviles != null) canvasControlesMoviles.SetActive(false);
 
         // Liberamos el ratón (esto sigue siendo útil cuando haces pruebas en tu computadora)
