@@ -1,12 +1,16 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class ManejadorPausa : MonoBehaviour
 {
     [Header("Paneles de UI")]
     public GameObject panelPausa;
     public GameObject panelConfiguracion;
-    public GameObject canvasControlesMoviles; // ¡NUEVO! Para apagar los joysticks en Android
+    public GameObject canvasControlesMoviles;
+
+    [Header("Textos")]
+    public TextMeshProUGUI textoEstadisticas;
 
     private bool estaPausado = false;
 
