@@ -76,4 +76,21 @@ public class ManejadorPausa : MonoBehaviour
 
         SceneManager.LoadScene("MenuPrincipal");
     }
+
+    void Update()
+    {
+        // Si presionamos la tecla P en el teclado
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            // Revisamos si el juego ya está pausado para reanudarlo, o viceversa
+            if (estaPausado)
+            {
+                Reanudar();
+            }
+            else
+            {
+                Pausar();
+            }
+        }
+    }
 }
