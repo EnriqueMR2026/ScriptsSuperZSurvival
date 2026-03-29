@@ -8,7 +8,7 @@ public class ControladorArmas : MonoBehaviour
     public string nombreArma = "AK-47";
     public float cadenciaDisparo = 0.15f;
     public float danoDelArma = 35f;
-    
+
     [Header("Identificación Visual (El DNI)")]
     public Sprite iconoCinturon;      // Arrastra aquí la imagen del arma para el slot
     public Sprite iconoBotonAccion;   // Arrastra aquí la imagen para el botón de atacar (ej. una bala)
@@ -104,6 +104,13 @@ public class ControladorArmas : MonoBehaviour
         {
             GameObject bala = Instantiate(prefabBala, puntoDisparo.position, puntoDisparo.rotation);
             
+            // ¡NUEVO! Le inyectamos a la bala el daño de esta arma específica
+            ProyectilBala scriptBala = bala.GetComponent<ProyectilBala>();
+            if (scriptBala != null)
+            {
+                scriptBala.danoBala = danoDelArma;
+            }
+
             // --- ¡MAGIA MEJORADA! Ignoramos TODOS los colisionadores del jugador ---
             Collider[] colisionadoresJugador = transform.root.GetComponentsInChildren<Collider>();
             Collider colliderBala = bala.GetComponent<Collider>();
