@@ -110,8 +110,14 @@ public class InteraccionJugador : MonoBehaviour
     private GameObject modeloEnSlot4;
     private bool slotsInicializados = false;
 
+    // ¡NUEVAS VARIABLES! Para recordar el slot activo y el arma de la persiana
+    public int slotActual = -1; 
+    private int indiceArmaPersianaActual = -1; 
+
     public void CambiarHerramienta(int indiceSlot)
     {
+        slotActual = indiceSlot; // ¡NUEVO! Guardamos el slot para que la rueda del ratón lo sepa
+
         // 0. Inicialización de seguridad (solo corre la primera vez)
         if (!slotsInicializados)
         {
