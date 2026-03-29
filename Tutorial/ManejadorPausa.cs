@@ -6,6 +6,7 @@ public class ManejadorPausa : MonoBehaviour
     [Header("Paneles de UI")]
     public GameObject panelPausa;
     public GameObject panelConfiguracion;
+    public GameObject canvasControlesMoviles; // ¡NUEVO! Para apagar los joysticks en Android
 
     private bool estaPausado = false;
 
@@ -15,7 +16,10 @@ public class ManejadorPausa : MonoBehaviour
         Time.timeScale = 0f;
         panelPausa.SetActive(true);
 
-        // Liberamos el ratón para poder dar clic en la interfaz
+        // ¡NUEVO! Apagamos los controles táctiles para que no haya accidentes
+        if (canvasControlesMoviles != null) canvasControlesMoviles.SetActive(false);
+
+        // Liberamos el ratón (esto sigue siendo útil cuando haces pruebas en tu computadora)
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
@@ -27,7 +31,10 @@ public class ManejadorPausa : MonoBehaviour
         panelPausa.SetActive(false);
         panelConfiguracion.SetActive(false);
 
-        // Bloqueamos el ratón de nuevo para seguir disparando y moviendo la cámara
+        // ¡NUEVO! Encendemos los controles táctiles de nuevo para seguir jugando
+        if (canvasControlesMoviles != null) canvasControlesMoviles.SetActive(true);
+
+        // Bloqueamos el ratón de nuevo (para pruebas en computadora)
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
