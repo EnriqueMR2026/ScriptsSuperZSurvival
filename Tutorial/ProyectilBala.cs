@@ -16,6 +16,9 @@ public class ProyectilBala : MonoBehaviour
         // --- ¡EL BUG ESTABA AQUÍ! BORRAMOS LA SECCIÓN 2 POR COMPLETO ---
     }
 
+    // ¡NUEVO! Agrega esta variable justo arriba, junto a 'tiempoDeVida', para que el arma pueda modificarla
+    public float danoBala = 35f;
+
     private void OnCollisionEnter(Collision collision)
     {
         // 1. Obtenemos el punto exacto donde la bala tocó la superficie
@@ -34,11 +37,11 @@ public class ProyectilBala : MonoBehaviour
         EnemigoZombi zombi = collision.collider.GetComponent<EnemigoZombi>();
         if (zombi != null)
         {
-            // Le bajamos 35 puntos de vida (necesitarás 3 tiros para matar a un zombi de 100 de vida)
-            zombi.RecibirDano(35);
+            // ¡ACTUALIZADO! Ahora usamos la variable en lugar del número fijo
+            zombi.RecibirDano(Mathf.RoundToInt(danoBala));
 
-            // ¡NUEVO! Sumamos el daño al contador global de estadísticas de la pausa
-            ManejadorPausa.danoCausado += 35f;
+            // ¡ACTUALIZADO! Sumamos el daño real al contador global de estadísticas
+            ManejadorPausa.danoCausado += danoBala;
 
             // --- ¡NUEVO! AVISAMOS AL HUD DEL IMPACTO ---
             EfectosHUD efectos = FindFirstObjectByType<EfectosHUD>();
