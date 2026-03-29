@@ -6,8 +6,9 @@ public class ControladorArmas : MonoBehaviour
 {
     [Header("Configuración del Arma")]
     public string nombreArma = "AK-47";
-    public float cadenciaDisparo = 0.15f; // Qué tan rápido salen las balas
-
+    public float cadenciaDisparo = 0.15f;
+    public float danoDelArma = 35f;
+    
     [Header("Identificación Visual (El DNI)")]
     public Sprite iconoCinturon;      // Arrastra aquí la imagen del arma para el slot
     public Sprite iconoBotonAccion;   // Arrastra aquí la imagen para el botón de atacar (ej. una bala)
