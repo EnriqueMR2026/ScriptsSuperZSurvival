@@ -91,6 +91,10 @@ public class EnemigoZombi : MonoBehaviour
         if (vidaActual <= 0)
         {
             estaMuerto = true;
+            
+            // ¡NUEVO! Le avisamos al contador global que matamos a un zombi
+            ManejadorPausa.zombisEliminados++;
+
             agente.enabled = false;
             anim.SetTrigger("Morir");
             
