@@ -59,6 +59,9 @@ public class ControladorCuerpoACuerpo : MonoBehaviour
             {
                 zombi.RecibirDano(dano); 
                 
+                // ¡NUEVO! Sumamos el daño de cuerpo a cuerpo al contador global de estadísticas de la pausa
+                ManejadorPausa.danoCausado += dano;
+                
                 // --- ¡NUEVO! AVISAMOS AL HUD DEL IMPACTO ---
                 EfectosHUD efectos = FindFirstObjectByType<EfectosHUD>();
                 if (efectos != null)
