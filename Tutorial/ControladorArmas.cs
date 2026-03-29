@@ -104,7 +104,7 @@ public class ControladorArmas : MonoBehaviour
             GameObject bala = Instantiate(prefabBala, puntoDisparo.position, puntoDisparo.rotation);
             
             // --- ¡MAGIA MEJORADA! Ignoramos TODOS los colisionadores del jugador ---
-            Collider[] colisionadoresJugador = GetComponentsInParent<Collider>();
+            Collider[] colisionadoresJugador = transform.root.GetComponentsInChildren<Collider>();
             Collider colliderBala = bala.GetComponent<Collider>();
             
             if (colliderBala != null)
