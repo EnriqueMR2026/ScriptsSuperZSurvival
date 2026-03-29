@@ -158,4 +158,55 @@ public class MovimientoJugador : MonoBehaviour
             camaraJugador.localRotation = Quaternion.Euler(rotacionX, 0f, 0f);
         }
     }
+
+    // ¡NUEVA FUNCIÓN TÁCTICA! Para la tecla Shift (Alternar opciones con la persiana abierta)
+    public void AlternarOpcionesPersiana()
+    {
+        // Solo funciona si tienes seleccionado el Slot 3 o el Slot 4
+        if (slotActual != 3 && slotActual != 4) return;
+
+        GameObject[] listaAUsar = (slotActual == 3) ? listaArmasPrincipales : listaArmasSecundarias;
+        if (listaAUsar.Length == 0) return;
+
+        // Avanzamos al siguiente índice en tu mochila
+        indiceArmaPersianaActual++;
+        if (indiceArmaPersianaActual >= listaAUsar.Length)
+        {
+            indiceArmaPersianaActual = 0; // Si llegamos al final, damos la vuelta
+        }
+
+        // Pequeño ciclo de seguridad por si dejaste algún hueco vacío en la lista de Unity
+        int contadorSeguridad = 0;
+        while (listaAUsar[indiceArmaPersianaActual] == null && contadorSeguridad < listaAUsar.Length)
+        {
+            indiceArmaPersianaActual++;
+            if (indiceArmaPersianaActual >= listaAUsar.Length) indiceArmaPersianaActual = 0;
+            contadorSeguridad++;
+        }
+
+        // Si encontramos un arma válida, la equipamos
+        if (listaAUsar[indiceArmaPersianaActual] != null)
+        {
+            if (slotActual == 3)
+            {
+                ElegirArmaPrincipal(indiceArmaPersianaActual);
+            }
+            else
+            {
+                ElegirArmaSecundaria(indiceArmaPersianaActual);
+            }
+
+            // ¡LA MAGIA VISUAL! Volvemos a abrir la persiana para que siga visible mientras cambias
+            AbrirPersiana(slotActual);
+        }
+    }
+
+    // ¡NUEVA FUNCIÓN! Para ocultar la persiana al dar clic izquierdo o atacar
+    public void OcultarPersiana()
+    {
+        if (persianaAbierta)
+        {
+            CerrarPersianas();
+        }
+    }
 }
