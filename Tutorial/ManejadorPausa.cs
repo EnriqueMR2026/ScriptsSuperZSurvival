@@ -14,6 +14,10 @@ public class ManejadorPausa : MonoBehaviour
 
     private bool estaPausado = false;
 
+    // Variables globales para llevar el conteo desde cualquier otro script
+    public static int zombisEliminados = 0;
+    public static float danoCausado = 0f;
+
     public void Pausar()
     {
         estaPausado = true;
@@ -28,8 +32,8 @@ public class ManejadorPausa : MonoBehaviour
             int segundos = Mathf.FloorToInt(tiempoJugado % 60);
             
             textoEstadisticas.text = "TIEMPO DE SUPERVIVENCIA: " + minutos.ToString("00") + ":" + segundos.ToString("00") + "\n" +
-                                     "ZOMBIS ELIMINADOS: 0\n" +
-                                     "DAÑO CAUSADO: 0";
+                                     "ZOMBIS ELIMINADOS: " + zombisEliminados.ToString() + "\n" +
+                                     "DAÑO CAUSADO: " + Mathf.RoundToInt(danoCausado).ToString();
         }
 
         // Apagamos los controles táctiles para que no haya accidentes
