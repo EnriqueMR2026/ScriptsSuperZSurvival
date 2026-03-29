@@ -9,6 +9,7 @@ public class ManejadorPerfil : MonoBehaviour
     public GameObject panelPrincipal;
     public GameObject panelSeleccionModo;
     public GameObject panelConfiguracion;
+    public GameObject panelGameOver;
     
     [Header("UI Registro")]
     public TMP_InputField inputNombre;
@@ -33,6 +34,20 @@ public class ManejadorPerfil : MonoBehaviour
     {
         // Al iniciar el juego, mostramos el nombre si ya existe
         ActualizarTextoMenu();
+
+        // ¡NUEVO! Revisamos si venimos de la pantalla de pausa/juego
+        if (PlayerPrefs.GetInt("MostrarGameOver", 0) == 1)
+        {
+            // Apagamos el menú principal y encendemos el panel de resultados
+            panelPrincipal.SetActive(false);
+            if (panelGameOver != null) 
+            {
+                panelGameOver.SetActive(true);
+            }
+
+            // Borramos la nota secreta para que no se abra la próxima vez que entremos de forma normal
+            PlayerPrefs.DeleteKey("MostrarGameOver");
+        }
     }
 
     // Esta se la pones al Botón JUGAR del Menú Principal
