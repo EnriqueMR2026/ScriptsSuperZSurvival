@@ -10,9 +10,10 @@ public class ProyectilBala : MonoBehaviour
 
     void Start()
     {
-        // Esta sola línea destruye la bala mágicamente después de X segundos
-        // para que no viaje hasta el infinito si disparan al cielo.
-        Destroy(gameObject, tiempoDeVida);
+        // 1. Reloj de autodestrucción: Si no choca con nada, se borra en 5 segundos
+        Destroy(gameObject, 5f);
+        
+        // --- ¡EL BUG ESTABA AQUÍ! BORRAMOS LA SECCIÓN 2 POR COMPLETO ---
     }
 
     private void OnCollisionEnter(Collision collision)
