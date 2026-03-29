@@ -79,17 +79,21 @@ public class ManejadorPausa : MonoBehaviour
 
     void Update()
     {
-        // Si presionamos la tecla P en el teclado
-        if (Input.GetKeyDown(KeyCode.P))
+        // Usamos el Nuevo Sistema de Input para evitar el error de la consola
+        if (UnityEngine.InputSystem.Keyboard.current != null)
         {
-            // Revisamos si el juego ya está pausado para reanudarlo, o viceversa
-            if (estaPausado)
+            // Si presionamos la tecla P en el teclado
+            if (UnityEngine.InputSystem.Keyboard.current.pKey.wasPressedThisFrame)
             {
-                Reanudar();
-            }
-            else
-            {
-                Pausar();
+                // Revisamos si el juego ya está pausado para reanudarlo, o viceversa
+                if (estaPausado)
+                {
+                    Reanudar();
+                }
+                else
+                {
+                    Pausar();
+                }
             }
         }
     }

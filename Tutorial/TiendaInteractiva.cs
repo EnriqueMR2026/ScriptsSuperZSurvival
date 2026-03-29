@@ -33,6 +33,10 @@ public class TiendaInteractiva : MonoBehaviour
         {
             panelTienda.SetActive(true);
             Time.timeScale = 0f; // Pausamos el mundo 3D para que compres tranquilo
+
+            // ¡NUEVO! Liberamos el ratón para poder dar clic en la interfaz
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
     }
 
@@ -42,6 +46,10 @@ public class TiendaInteractiva : MonoBehaviour
         {
             panelTienda.SetActive(false);
             Time.timeScale = 1f; // El mundo vuelve a la normalidad
+            
+            // ¡NUEVO! Bloqueamos el ratón de nuevo para seguir disparando y moviendo la cámara
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
             
             // Magia del tutorial: Si estamos en la misión de la tienda (Paso 2) y ya tienes tu cuchillo
             ManejadorTutorial tutorial = FindFirstObjectByType<ManejadorTutorial>();
