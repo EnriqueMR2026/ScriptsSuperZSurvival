@@ -48,9 +48,17 @@ public class MovimientoJugador : MonoBehaviour
         controller.Move(movimiento * velocidad * Time.deltaTime);
         controller.Move(new Vector3(0, -9.81f * Time.deltaTime, 0));
 
-        // 3. LECTURA DE VISTA (Pantalla táctil o Mouse)
+        // 3. LECTURA DE VISTA (Pantalla táctil o Mouse PC)
         Vector2 inputVista = Vector2.zero;
-        if (Pointer.current != null && Pointer.current.press.isPressed)
+
+        // ¡NUEVO! Lógica para PC (Ratón oculto y bloqueado, FPS Clásico)
+        if (Mouse.current != null && Cursor.lockState == CursorLockMode.Locked)
+        {
+            // Multiplicamos por 0.1f para que no gire rapidísimo en la compu
+            inputVista = Mouse.current.delta.ReadValue() * 0.1f; 
+        }
+        // Lógica para Celular (Tocar y arrastrar lado derecho)
+        else if (Pointer.current != null && Pointer.current.press.isPressed)
         {
             if (Pointer.current.position.ReadValue().x > Screen.width / 2f)
             {
@@ -64,7 +72,7 @@ public class MovimientoJugador : MonoBehaviour
 
         transform.Rotate(Vector3.up * inputVista.x * sensibilidadVista * Time.deltaTime);
 
-        // 4. ¡NUEVO! ATAJOS DE TECLADO PARA PRUEBAS (Espacio, E, Q)
+        // 4. ATAJOS DE TECLADO PARA PRUEBAS (Espacio, E, Q, R)
         if (Keyboard.current != null)
         {
             // Sacamos el script de InteraccionJugador
@@ -101,6 +109,17 @@ public class MovimientoJugador : MonoBehaviour
                     {
                         panel.BotonLibritoPresionado();
                     }
+                }
+            }
+
+            // ¡NUEVO! BOTÓN RECARGAR (R)
+            if (Keyboard.current.rKey.wasPressedThisFrame)
+            {
+                // Buscamos si el jugador tiene un arma en las manos y la recargamos
+                ControladorArmas armaActiva = GetComponentInChildren<ControladorArmas>();
+                if (armaActiva != null)
+                {
+                    armaActiva.IniciarRecarga();
                 }
             }
         }
