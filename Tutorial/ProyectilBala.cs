@@ -37,6 +37,9 @@ public class ProyectilBala : MonoBehaviour
             // Le bajamos 35 puntos de vida (necesitarás 3 tiros para matar a un zombi de 100 de vida)
             zombi.RecibirDano(35);
 
+            // ¡NUEVO! Sumamos el daño al contador global de estadísticas de la pausa
+            ManejadorPausa.danoCausado += 35f;
+
             // --- ¡NUEVO! AVISAMOS AL HUD DEL IMPACTO ---
             EfectosHUD efectos = FindFirstObjectByType<EfectosHUD>();
             if (efectos != null)
